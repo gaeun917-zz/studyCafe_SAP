@@ -61,6 +61,10 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
 
+
+
+
+
 	private ApplicationContext context;
 	private String beanName;
 	@Override
