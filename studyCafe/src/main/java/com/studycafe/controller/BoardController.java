@@ -51,6 +51,10 @@ import com.studycafe.model.service.SmallCategoryService;
 @RequestMapping(value = "/board")
 public class BoardController implements ApplicationContextAware, BeanNameAware {
 
+
+
+
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
