@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 논리적 클래스 만들기 -->
+<mapper namespace="com.studycafe.model.mapper.MemberMapper">
+
+	<resultMap type="Member" id="memberMap">
+		<id property="memberNo" column="member_No" />
+		<result property="memberId" column="id" />
+		<result property="name" column="name" />
+		<result property="passwd" column="password" />
+		<result property="confirmPasswd" column="confirmPasswd" />
+		<result property="email" column="email" />
+		<result property="regDate" column="member_date" />
+		<result property="gender" column="gender" />
+		<result property="facebookId" column="facebook_id" />
+		<result property="kakaoId" column="kakao_id" />
+		<result property="status" column="status" />
+		<result property="gradeLevel" column="grade_level" />
+		<result property="introduction" column="introduction" />
+	</resultMap>
+	
+	<resultMap type="BoardMember" id="boardMemberMap">
+		<result property="boardNo" column="board_no" />
+		<result property="memberNo" column="member_no" />
+		<result property="status" column="status" />
+	</resultMap>
+
+	<sql id="selectDefault">
+		SELECT member_no, id, name, password, email, member_date, gender, facebook_id, kakao_id, status, grade_level, introduction
+		FROM member
+	</sql>
+
+<!--value 에서는 위에 명시된 column명을 씀    -->
+	<!-- <insert id="insertMember" parameterType="Member" >
+		INSERT INTO member 
+		(member_No, memberId, name, password, confirmPasswd, email, regDate, gender )
+		VALUES
+		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name} #{passwd}, #{confirmPasswd}, #{email}, sysdate, #{gender});
+	</insert>  -->
+
+<insert id="insertMember" parameterType="Member" >
+		INSERT INTO member 
+		(member_No, Id, name, password, email, gender, introduction )
+		VALUES
+		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name}, #{passwd},  #{email}, #{gender}, #{introduction})
+	</insert> 
+
+	<!-- 논리적 메서드 만들기 -->
+	<select id="selectMembers" resultType="Member" parameterType="hashMap"
+		resultMap="memberMap">
+		<include refid="selectDefault" />
+		<!-- SELECT memberId, email, userType, active, regDate FROM member -->
+	</select>
+	
+	<select id="selectMemberById" parameterType="string" resultMap="memberMap">
+		<include refid="selectDefault" />
+		WHERE Id = #{memberId}
+	</select>
+	
+	<select id="selectMemberByEmail" parameterType="string" resultMap="memberMap">
+		<include refid="selectDefault" />
+		WHERE email = #{email}
+	</select>
+	
+	
+	
+	<select id="selectMemberByIdAndPasswd" parameterType="hashMap" resultMap="memberMap">
+		<include refid="selectDefault" />
+		WHERE Id = #{memberId} AND password = #{passwd}
+	</select>
+	
+	
+	<select id="selectMemberByMemberNo" parameterType="int" resultMap="memberMap">
+		<include refid="selectDefault" />
+		WHERE member_no = #{memberno}
+	</select>
+	
+	<!-- parameterType = 시퀀스로 멤버 서치 하기때문에 int으로   -->
+	<update id="changePassword" parameterType="Member">
+		UPDATE Member 
+		SET password= #{passwd}  
+		WHERE member_no =#{memberNo}
+	</update>
+	
+	<update id="deleteByMemberNo" parameterType="int" >
+		UPDATE Member 
+		SET status= 'deactive'  
+		WHERE member_no =#{memberNo}
+	</update>
+	
+	<insert id="insertBoardMemberByBoardNoMemberNo" parameterType="BoardMember">
+		INSERT INTO board_member(board_no, member_no, status)
+		VALUES (#{boardNo}, #{memberNo}, '1')
+	</insert>
+	
+	<select id="selectBoardMemberByBoardNo" parameterType="int" resultMap="boardMemberMap">
+		SELECT * 
+		FROM board_member
+		WHERE board_no = #{boardNo} AND status = '1'
+	</select>
+	
+	<select id="selectBoardMemberCountByBoardNo" parameterType="int" resultType="int">
+		SELECT count(*) 
+		FROM board_member
+		WHERE board_no = #{boardNo} AND status = '1'
+	</select>
+	
+</mapper>
+  
+

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.studycafe.model.mapper.PageMapper">
+
+	<!-- dto db -->
+		<resultMap type="Page" id="pageMap">
+		<id property="pageNo" column="page_no" />
+		<result property="image" column="image" />
+		<result property="startDate" column="startdate" />
+		<result property="closeDate" column="closedate" />
+		<result property="status" column="status" />
+		<result property="name" column="name" />
+	</resultMap>
+	
+	<resultMap type="Member" id="memberMap">
+		<id property="memberNo" column="member_no" />
+		<result property="title" column="title" />
+	</resultMap>
+	
+	<resultMap type="PageMenu" id="pageMenuMap">
+		<id property="menuNo" column="menu_no" />
+		<result property="name" column="name" />
+		<result property="status" column="status" />
+		<result property="pageNo" column="page_no" />
+	</resultMap>
+	
+	<select id="selectPageNoByMemberNo" parameterType="int" resultMap="pageMap">
+		SELECT
+		page_no, name
+		FROM member_page
+		WHERE member_no = #{memberNo} AND status = '1'
+	</select>
+	
+	<select id="selectMemberPageByMenuNo" parameterType="int" resultMap="pageMenuMap">
+		SELECT
+		menu_no, page_no, name
+		FROM page_menu
+		WHERE menu_no = #{menuNo} AND (status = '1' OR status = '5')
+	</select>
+	
+	<select id="selectPageMenuByPageNoNotice" parameterType="int" resultMap="pageMenuMap">
+		SELECT
+		menu_no, page_no, name
+		FROM page_menu
+		WHERE page_no = #{pageNo} AND status = '5'
+	</select>
+	
+	<select id="selectPageMenuList" parameterType="int" resultMap="pageMenuMap">
+		SELECT
+		menu_no, name, status, page_no
+		FROM page_menu
+		WHERE page_no = #{pageNo} AND status = '1'
+		ORDER BY page_no
+	</select>
+	
+	<insert id="insertPageMenuByAjax" parameterType="pageMenu"
+		useGeneratedKeys="true"
+		keyProperty="menuNo" keyColumn="menu_no">
+		INSERT INTO page_menu
+		(
+			menu_no
+			, name
+			, page_no
+		)
+		VALUES (page_menu_sequence.nextval, #{name}, #{pageNo})
+	</insert>
+	
+	<insert id="insertPageMenuNotice" parameterType="int">
+		INSERT INTO page_menu
+		(
+			menu_no
+			, name
+			, page_no
+			, status
+		)
+		VALUES (page_menu_sequence.nextval, '공지 사항', #{pageNo}, '5')
+	</insert>
+	
+	<insert id="insertImageFile" parameterType="PageImage">
+      INSERT INTO page_image (image_no, save_name, image_name, page_no)
+      VALUES (page_image_sequence.nextVal, #{savedFileName}, #{userFileName}, #{pageNo})
+   </insert>
+   
+   <select id="selectMemberPageCountByMemberNo" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM member_page
+		WHERE member_no = #{memberNo}
+	</select>
+	
+	<insert id="insertMemberPageByMemberNo" parameterType="hashMap">
+      INSERT INTO member_page (status, member_no, page_no, name)
+      VALUES ('1', #{memberNo}, #{pageNo}, #{name})
+   </insert>
+   
+   <insert id="insertPage" parameterType="page">
+      INSERT INTO page (page_no, closedate, status)
+      VALUES (page_sequence.nextval, #{closeDate}, '1')
+   </insert>
+   
+   <select id="selectPageNo" resultType="int">
+		SELECT page_sequence.currval FROM DUAL
+	</select>
+   
+   <!-- <insert id="insertBoard" parameterType="Board">
+      <selectKey keyProperty="boardNo" 
+         order="AFTER" resultType="int">
+         SELECT board_sequence.currval FROM DUAL
+      </selectKey>      
+      INSERT INTO board (board_no, title, content, closeDate, memberCount, 
+				place, member_no, purpose, period, frequency, small_category_no)
+	  VALUES (board_sequence.nextval, #{title}, #{content}, #{closeDate}, #{memberCount}, 
+				#{place}, #{memberNo}, #{purpose}, #{period}, #{frequency}, #{smallCategoryNo})
+   </insert> -->
+	
+</mapper>

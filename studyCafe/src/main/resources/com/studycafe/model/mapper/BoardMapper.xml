@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.studycafe.model.mapper.BoardMapper">
+
+	<resultMap id="boardFileMap" type="BoardFile" >
+      <id property="boardFileNo" column="file_no" />
+      <result property="boardNo" column="board_no" />
+      <result property="savedFileName" column="save_name" />
+      <result property="userFileName" column="file_name" />
+      <!-- <result property="downloadCount" column="downloadCount" /> -->
+   </resultMap>
+   
+	<resultMap id="boardMap" type="Board">
+		<id property="boardNo" column="board_no" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="closeDate" column="closedate" />
+		<result property="startDate" column="startdate" />
+		<result property="memberCount" column="membercount" />
+		<result property="place" column="place" />
+		<result property="voteCount" column="votecount" />
+		<result property="status" column="status" />
+		<result property="memberNo" column="member_no" />
+		<result property="purpose" column="purpose" />
+		<result property="period" column="period" />
+		<result property="frequency" column="frequency" />
+		<result property="smallCategoryNo" column="small_category_no" />
+      	<collection property="memberId" column="member_no" 
+         select="selectMemberIdByMemberNo" />
+         
+        <collection property="files" column="board_no" 
+         resultMap="boardFileMap" /> 
+	</resultMap>
+	
+	<resultMap id="boardMap2" type="Board" >
+		<id property="boardNo" column="board_no" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="closeDate" column="closedate" />
+		<result property="startDate" column="startdate" />
+		<result property="memberCount" column="membercount" />
+		<result property="place" column="place" />
+		<result property="voteCount" column="votecount" />
+		<result property="status" column="status" />
+		<result property="memberNo" column="member_no" />
+		<result property="purpose" column="purpose" />
+		<result property="period" column="period" />
+		<result property="frequency" column="frequency" />
+		<result property="smallCategoryNo" column="small_category_no" />
+		<!-- <result property="images" column="board_images" /> -->
+		<collection property="memberId" column="member_no"
+			select="selectMemberIdByMemberNo" />
+		<collection property="smallCategoryName" column="small_category_no"
+			select="selectSmallCategoryNameBySmallCategoryNo" />
+		
+		<collection property="files" column="board_no" 
+         select="selectBoardFilesByBoardNo" />
+	</resultMap>
+
+	<resultMap id="MemberMap" type="Member">
+		<id property="memberNo" column="member_no" />
+		<result property="memberId" column="id" />
+		<!-- <result property="downloadCount" column="downloadCount" /> -->
+	</resultMap>
+
+	<resultMap id="SmallCategoryMap" type="SmallCategory" >
+		<id property="smallCategoryNo" column="small_category_no" />
+		<result property="smallCategoryName" column="small_category_name" />
+	</resultMap>
+
+	<!-- <insert id="insertBoard" parameterType="Board" useGeneratedKeys="true"
+		keyProperty="boardNo" keyColumn="board_no">
+		INSERT INTO board (board_no, title, content, closeDate, memberCount, 
+				place, member_no, purpose, period, frequency, small_category_no)
+		VALUES (board_sequence.nextval, #{title}, #{content}, #{closeDate}, #{memberCount}, 
+				#{place}, #{memberNo}, #{purpose}, #{period}, #{frequency}, #{smallCategoryNo})
+	</insert> -->
+	
+	<insert id="insertBoard" parameterType="Board">
+      <selectKey keyProperty="boardNo" 
+         order="AFTER" resultType="int">
+         SELECT board_sequence.currval FROM DUAL
+      </selectKey>      
+      INSERT INTO board (board_no, title, content, closeDate, memberCount, 
+				place, member_no, purpose, period, frequency, small_category_no)
+	  VALUES (board_sequence.nextval, #{title}, #{content}, #{closeDate}, #{memberCount}, 
+				#{place}, #{memberNo}, #{purpose}, #{period}, #{frequency}, #{smallCategoryNo})
+   </insert>
+   <select id="selectBoardFilesByBoardNo"
+      parameterType="int" resultMap="boardFileMap">
+      SELECT file_no, save_name, file_name, board_no
+      FROM board_file
+      WHERE board_no = #{boardNo}
+   </select>
+   <insert id="insertBoardFile" parameterType="BoardFile">
+      INSERT INTO board_file (file_no, save_name, file_name, board_no)
+      VALUES (board_file_sequence.nextVal, #{savedFileName}, #{userFileName}, #{boardNo})
+   </insert>
+
+	<select id="selectBoardList" resultMap="boardMap2">
+		SELECT board_no, title,
+		closeDate, startDate, memberCount, status, purpose, period,
+		small_category_no, place, frequency, member_no<!-- , board_images -->
+		FROM board
+		WHERE status = '1' OR status = '0'
+
+	</select>
+
+	<select id="selectMemberIdByMemberNo" resultMap="MemberMap">
+		SELECT
+		member_no, id
+		FROM member
+		WHERE member_no = #{memberNo}
+	</select>
+
+	<select id="selectSmallCategoryNameBySmallCategoryNo" resultMap="SmallCategoryMap">
+		SELECT small_category_no , small_category_name
+		FROM small_category
+		WHERE small_category_no = #{smallCategoryNo}
+	</select>
+
+	<select id="selectBoardByBoardNo" parameterType="int" resultMap="boardMap2">
+		SELECT
+		board_no, title, content,
+		closeDate, startDate, memberCount,
+		voteCount, status, place, purpose, period, frequency, member_no,
+		small_category_no<!-- , board_images -->
+		FROM board
+		WHERE board_no = #{boardNo}
+	</select>
+
+	<select id="selectBoardByBoardNo2" parameterType="int"
+		resultMap="boardMap">
+		SELECT
+		board_no, title, content,
+		closeDate, memberCount,
+		place, purpose, period, frequency,
+		small_category_no<!-- , board_images -->
+		FROM
+		board
+		WHERE board_no = #{boardNo}
+	</select>
+
+	<select id="selectSmallCategoryByBoardNo" parameterType="int"
+		resultMap="SmallCategoryMap">
+		SELECT
+		small_category_no, small_category_name
+		FROM small_category
+		WHERE small_category_no = #{smallCategoryNo}
+	</select>
+
+	<select id="selectBoardListBySmallCategoryNo" resultMap="boardMap2">
+		SELECT board_no, title,
+		closeDate, startDate, memberCount, status, purpose,
+		period, small_category_no, place, frequency, member_no<!-- , board_images -->
+		FROM board
+		WHERE small_category_no = #{smallCategoryNo}
+	</select>
+
+	<update id="deleteBoard" parameterType="int">
+		UPDATE board SET status =
+		'0' WHERE board_no = #{boardNo}
+
+	</update>
+	
+	<select id="selectBoardListByTime" resultMap="boardMap2">
+		SELECT board_no, title,
+		closeDate, startDate, memberCount, status, purpose, period,
+		small_category_no, place, frequency, member_no<!-- , board_images -->
+		FROM board
+		WHERE CLOSEDATE-sysdate <![CDATA[<]]> 0 AND status='1'
+	</select>
+		
+	
+</mapper>

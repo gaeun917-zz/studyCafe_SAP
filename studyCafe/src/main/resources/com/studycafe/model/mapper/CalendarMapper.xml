@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.studycafe.model.mapper.CalendarMapper">
+
+   <insert id="insertCalendar" parameterType="Calendar">
+      <selectKey keyProperty="calendarNo" order="AFTER" resultType="int">
+         SELECT page_calendar_sequence.currval FROM DUAL
+      </selectKey>           
+      INSERT INTO page_calendar (calendar_no, title, content, start_date, due_date, member_no, page_no)
+      VALUES (page_calendar_sequence.nextVal, #{title}, #{content}, #{startDate}, #{dueDate}, #{memberNo}, #{pageNo})
+   </insert> 
+
+  <select id="selectCalendarList" parameterType="int" resultMap="calendarMap">
+    select * 
+    from page_calendar
+    WHERE page_no = #{memberpageno}
+  </select>
+  
+  <select id="selectCalendarByCalendarNo" resultMap="calendarMap">
+    select *
+    from page_calendar
+    where calendar_no = #{calendarNo}
+  </select>
+    
+  <select id="selectMemberIdByMemberNo"
+      parameterType="int" resultMap="MemberMap">
+      SELECT member_no, id
+      FROM member
+      WHERE member_no = #{memberNo}
+   </select>
+     
+  <delete id="deleteCalendar" parameterType="int">
+		DELETE
+		FROM page_calendar
+		WHERE calendar_no = #{calendarNo} 
+  </delete>
+	   
+  <resultMap id="calendarMap" type="Calendar" >
+      <id property="calendarNo" column="calendar_no" />
+      <result property="title" column="title" />
+      <result property="content" column="content" />
+      <result property="startDate" column="start_date" />
+      <result property="dueDate" column="due_date" />
+      <result property="pageNo" column="page_no" />
+      <result property="memberNo" column="member_no" />
+      <collection property="memberId" column="member_no" 
+         select="selectMemberIdByMemberNo" />
+  </resultMap>
+  
+  <resultMap id="MemberMap" type="Member" >
+      <id property="memberNo" column="member_no" />
+      <result property="memberId" column="id" />
+   </resultMap>
+   
+</mapper>
+
+
+
+
+
+
+
+  
+  
+

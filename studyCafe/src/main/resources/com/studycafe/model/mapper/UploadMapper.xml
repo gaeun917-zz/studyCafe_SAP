@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.studycafe.model.mapper.UploadMapper">
+
+   <insert id="insertUpload" parameterType="Upload">
+      <selectKey keyProperty="uploadNo" 
+         order="AFTER" resultType="int">
+         SELECT page_upload_sequence.currval FROM DUAL
+      </selectKey>      
+      <!-- INSERT INTO page_upload (upload_no, title, content, read_count, pupload_date, status, menu_no, member_no)
+      VALUES (page_upload_sequence.nextVal, #{title}, #{content}, #{readCount}, sysdate, #{status}, #{menuNo}, #{memberNo}) -->
+      INSERT INTO page_upload (upload_no, title, content, pupload_date, member_no, page_no)
+      VALUES (page_upload_sequence.nextVal, #{title}, #{content}, sysdate, #{memberNo}, #{pageNo})
+   </insert>
+
+   <insert id="insertUpload2" parameterType="Upload"
+      useGeneratedKeys="true" 
+      keyProperty="uploadNo" keyColumn="upload_no">      
+      INSERT INTO page_upload (upload_no, title, content, read_count, pupload_date, status, menu_no, member_no)
+      VALUES (page_upload_sequence.nextVal, #{title}, #{content}, #{readCount}, #{regDate}, #{status}, #{menuNo}, #{memberNo})
+   </insert>
+   
+   <insert id="insertUploadFile" parameterType="UploadFile">
+      INSERT INTO page_file (file_no, save_name, file_name, upload_no)
+      VALUES (page_file_sequence.nextVal, #{savedFileName}, #{userFileName}, #{uploadNo})
+   </insert>
+
+   <select id="selectUploadList" parameterType="int" resultMap="uploadMap">
+      SELECT upload_no, title, pupload_date, status, member_no, page_no
+      FROM page_upload
+      WHERE page_no = #{memberpageno}
+      <!-- WHERE status = null -->
+   </select>
+   
+   <select id="selectUploadByUploadNo" 
+      parameterType="int" resultType="Upload">
+      SELECT upload_no, title, member_no, content, pupload_date
+      FROM page_upload 
+      WHERE upload_no = #{uploadNo} AND status = null
+   </select>
+   
+   <select id="selectUploadFileByUploadFileNo"
+      parameterType="int" resultMap="uploadFileMap">
+      SELECT file_no, upload_no, save_name, file_name
+      FROM page_file 
+      WHERE file_no = #{uploadFileNo}
+   </select>
+   
+   <update id="increaseUploadReadCount" parameterType="int">
+      UPDATE page_upload 
+      SET read_count = read_count + 1 
+      WHERE upload_no = #{uploadNo}
+   </update>
+   
+   <update id="increaseUploadFileDownloadCount" parameterType="int">
+      UPDATE page_file 
+      SET download_count = download_count + 1
+      WHERE file_no = #{uploadFileNo}
+   </update>
+   
+   <select id="selectUploadByUploadNo2" 
+      parameterType="int" resultMap="uploadMap">
+      SELECT 
+         u.upload_no, u.title, u.member_no, u.content, u.pupload_date,
+         uf.file_no, 
+         uf.save_name, uf.file_name 
+      FROM page_upload u
+      LEFT OUTER JOIN page_file uf
+      ON u.upload_no = uf.upload_no
+      WHERE u.upload_no = #{uploadNo} AND u.status = null
+   </select>
+   
+   <select id="selectUploadByUploadNo3" 
+      parameterType="int" resultMap="uploadMap2">
+      SELECT upload_no, title, content, pupload_date, member_no
+      FROM page_upload
+      WHERE upload_no = #{uploadNo} <!-- AND status = null -->
+   </select>
+   
+   
+   <select id="selectUploadFilesByUploadNo"
+      parameterType="int" resultMap="uploadFileMap">
+      SELECT file_no, upload_no, save_name, file_name
+      FROM page_file
+      WHERE upload_no = #{uploadNo}
+   </select>
+   
+   <select id="selectMemberIdByMemberNo"
+      parameterType="int" resultMap="MemberMap">
+      SELECT member_no, id
+      FROM member
+      WHERE member_no = #{memberNo}
+   </select>
+   
+	<update id="deleteBoard" parameterType="int">
+		UPDATE page_upload SET status = '0' WHERE upload_no = #{uploadNo}
+	</update>
+   
+   <!-- 아래는 병합 쿼리를 수행하는 구문 -->
+   <resultMap id="uploadFileMap" type="UploadFile" >
+      <id property="uploadFileNo" column="file_no" />
+      <result property="uploadNo" column="upload_no" />
+      <result property="savedFileName" column="save_name" />
+      <result property="userFileName" column="file_name" />
+      <!-- <result property="downloadCount" column="downloadCount" /> -->
+   </resultMap>
+   
+   <resultMap id="MemberMap" type="Member" >
+      <id property="memberNo" column="member_no" />
+      <result property="memberId" column="id" />
+      <!-- <result property="downloadCount" column="downloadCount" /> -->
+   </resultMap>
+   
+   <resultMap id="uploadMap" type="Upload" >
+      <id property="uploadNo" column="upload_no" />
+      <result property="title" column="title" />
+      <result property="content" column="content" />
+      <result property="readCount" column="read_count" />
+      <result property="regDate" column="pupload_date" />
+      <result property="status" column="status" />
+      <result property="pageNo" column="page_no" />
+      <result property="memberNo" column="member_no" />
+      <collection property="files" column="upload_no" 
+         resultMap="uploadFileMap" />
+      <collection property="memberId" column="member_no" 
+         select="selectMemberIdByMemberNo" />
+   </resultMap>
+   
+   <resultMap id="uploadMap2" type="Upload">
+      <id property="uploadNo" column="upload_no" />
+      <result property="title" column="title" />
+      <result property="content" column="content" />
+      <result property="readCount" column="read_count" />
+      <result property="regDate" column="pupload_date" />
+      <result property="status" column="status" />
+      <result property="menuNo" column="menu_no" />
+      <result property="memberNo" column="member_no" />
+      <collection property="files" column="upload_no" 
+         select="selectUploadFilesByUploadNo" />
+      <collection property="memberId" column="member_no" 
+         select="selectMemberIdByMemberNo" />
+   </resultMap>
+   
+   
+</mapper>
+
+
+
+
+
+
+
+  
+  
+
