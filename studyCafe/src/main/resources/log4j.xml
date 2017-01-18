@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-
+<!-- 로그 메세지를 어떤 형식으로 어디에 기록할지 에 대한 정보 : 콘솔에 트랜젝션 커밋, 롤백에 관한 정보 전달  -->
 	<!-- Appenders -->
 	<appender name="console" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out" />

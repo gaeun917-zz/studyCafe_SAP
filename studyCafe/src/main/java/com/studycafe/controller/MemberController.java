@@ -22,23 +22,24 @@ import com.studycafe.model.dao.MemberDao;
 import com.studycafe.model.dto.Member;
 import com.studycafe.common.Util;
 
-@Controller
-@RequestMapping(value = "/member/")
+@Controller //request 처리하고 view로 toss해 줌
+@RequestMapping(value = "/member/") //value url로 접속해서 들어오는 요청 받는 주소. 즉, 내 주소  
 public class MemberController {
-
-	
-// Controller has @annotation -> 	
-	
 
 	@Autowired
 	@Qualifier("oracleMemberDao")
 	private MemberDao dao;
-	public void setMemberDao(MemberDao memberDao) {
+	public void setMemberDao(MemberDao memberDao) {// DI : new Member 안하고, setMethod로 MemebrDao가져옴  
 		this.dao = memberDao;
 	}
-	
+
+	// jsp에서 <form action= list.action> 걸어놓은 곳으로 이동. value에 jsp 주소만 주기도 하지만, 
+	// action으로 정확히 어디에 적용되는지 명시! !!!!
 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
 	public String list(Model model) {
+		// Model이는 우체부 request씨에게 return jsp 주소로 addAttribute()한 내용을 보내달라고 함 
+		// jsp는 이 소포를 받음: Model이가 정한 id로 Attribute 내용 꺼내씀: ${ members } 
+		
 		//1. 데이터 조회 (dao 사용)
 		List<Member> members = dao.getList();
 		
@@ -46,9 +47,9 @@ public class MemberController {
 		Member member = members.get(0);
 		System.out.println(member.getMemberId());
 		model.addAttribute("members", members);
-		
+		// id:"members" value: members
 		//3. 뷰 반환
-		return "member/list";
+		return "member/list"; // View 보내줄 곳 주소: list.jsp 
 	}
 	
 //	@RequestMapping(
@@ -67,7 +68,7 @@ public class MemberController {
 	
 	@RequestMapping(value = "view.action", method = RequestMethod.GET)
 	public String view(@RequestParam("memberid") String memberId, Model model) {
-		
+//						requestParam은 http request를 메서드에(String memberId) 바로 전달해준다. 
 		if (memberId == null || memberId.length() == 0) {
 			return "redirect:/member/list.action";
 		}

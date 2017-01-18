@@ -41,6 +41,7 @@
         			<td>등급</td> -->
         		</tr>        	
         	<c:forEach var="member" items="${ members }">
+        	<!-- ${members}는 model.attribute에서 지정한 id.  -->
         		<tr style="height:30px">
         			<td>
         				<!-- view.action?memberid=...... 경로를 만들고 변수에 저장 -->

@@ -5,6 +5,7 @@
       <map>
         <entry key="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/calendar/list.jsp" value="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/calendar" />
         <entry key="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/calendar/writeform.jsp" value="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/calendar" />
+        <entry key="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/include/header.jsp" value="file://$PROJECT_DIR$/studyCafe/src/main/webapp/WEB-INF/views/include" />
       </map>
     </option>
   </component>

@@ -19,6 +19,9 @@
 	<div id="pageContainer">
 		    <div id="inputmain">
 		        <div class="inputsubtitle">회원 정보 변경 </div>
+		        
+		        
+		        
 		        <form:form action="mypage.action" method="post" modelAttribute="member"><!-- 상대경로표시 -->
 		      
 		      <fieldset>

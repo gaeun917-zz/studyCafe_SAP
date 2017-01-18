@@ -11,6 +11,8 @@
       <root url="jar://$PROJECT_DIR$/lib/classmate-0.8.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/hibernate-validator-5.0.1.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

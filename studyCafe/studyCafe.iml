@@ -66,6 +66,7 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../out/test/studyCafe" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
@@ -77,6 +78,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" exported="" name="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/C-_HeoLab_Utility_apache-tomcat-8.0.32" level="application" />
     <orderEntry type="library" exported="" name="Spring MVC-4.3.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Spring-4.3.4.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Spring-4.3.4.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Java EE 6-Java EE 6" level="project" />
   </component>
 </module>

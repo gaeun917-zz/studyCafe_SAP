@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/nhserver/Servers/Servers.iml" filepath="$PROJECT_DIR$/nhserver/Servers/Servers.iml" />
       <module fileurl="file://$PROJECT_DIR$/ing.iml" filepath="$PROJECT_DIR$/ing.iml" />
       <module fileurl="file://$PROJECT_DIR$/studyCafe/studyCafe.iml" filepath="$PROJECT_DIR$/studyCafe/studyCafe.iml" />
     </modules>

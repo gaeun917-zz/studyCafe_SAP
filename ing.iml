@@ -80,5 +80,9 @@
     <orderEntry type="library" exported="" name="Spring Batch-2.2.6" level="project" />
     <orderEntry type="library" exported="" name="Hibernate 5.2.3-5.2.3" level="project" />
     <orderEntry type="library" exported="" name="javax.servlet:jstl:1.0" level="project" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="Tomcat 8.0.33" level="application_server_libraries" />
+    <orderEntry type="library" exported="" name="javax.servlet.jsp:jsp-api:2.0" level="project" />
+    <orderEntry type="library" exported="" name="javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="springframework:spring:1.2.6" level="project" />
   </component>
 </module>

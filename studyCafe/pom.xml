@@ -5,6 +5,7 @@
 	<groupId>com.studycafe</groupId>
 	<artifactId>studyCafe</artifactId>
 	<name>studyCafe</name>
+	<!-- Servlet/JSP로 개발할때  Web Application Aarchiv를 줘야함  -->
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
@@ -195,6 +196,8 @@
 			<scope>test</scope>
 		</dependency>        
 	</dependencies>
+    
+    
     <build>
         <plugins>
             <plugin>
@@ -211,6 +214,7 @@
                     <downloadJavadocs>true</downloadJavadocs>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -223,6 +227,7 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+           
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
