@@ -1,14 +1,13 @@
 package com.studycafe.model.service;
 
-import java.util.List;
-
+import com.studycafe.model.dao.MemberDao;
+import com.studycafe.model.dto.BoardMember;
+import com.studycafe.model.dto.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.studycafe.model.dao.MemberDao;
-import com.studycafe.model.dto.BoardMember;
-import com.studycafe.model.dto.Member;
+import java.util.List;
 
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
@@ -39,7 +38,6 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member getMemberByMemberNo(int memberNo) {
-		// TODO Auto-generated method stub
 		return memberDao.getMemberByMemberNo(memberNo);
 	}
 

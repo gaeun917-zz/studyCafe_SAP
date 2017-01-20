@@ -1,15 +1,14 @@
 package com.studycafe.model.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
 import com.studycafe.model.dao.PageDao;
 import com.studycafe.model.dto.Page;
 import com.studycafe.model.dto.PageImage;
 import com.studycafe.model.dto.PageMenu;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service("pageService")
 public class PageServiceImpl implements PageService {
@@ -74,13 +73,5 @@ public class PageServiceImpl implements PageService {
 	public int selectPageNo() {
 		return pageDao.selectPageNo();
 	}
-
-	/*@Override
-	public void searchImageByPageNo(int pageNo) {
-
-		return pageDao.selectImageByPageNo(pageNo);
-	}*/
-
-	
 
 }

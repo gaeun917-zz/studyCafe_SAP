@@ -1,17 +1,15 @@
 package com.studycafe.model.mapper;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.studycafe.model.dto.BoardMember;
 import com.studycafe.model.dto.Member;
 
+import java.util.HashMap;
+import java.util.List;
+
 public interface MemberMapper {
 
-	
-// MemberMapper.xml의 sql statement를 여기서 나열! 	
-	
-	
+// MemberMapper.xml(sql)
+
 	void insertMember(Member member);
 	List<Member> selectMembers();
 	Member selectMemberById(String memberId);

@@ -1,21 +1,19 @@
 package com.studycafe.view;
 
+import com.studycafe.model.dto.UploadFile;
+import org.springframework.web.servlet.view.AbstractView;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.view.AbstractView;
-
-import com.studycafe.model.dto.UploadFile;
-
 public class DownloadView extends AbstractView {
 
-	//응답 컨텐츠를 생성하는 용도의 메서드
+	//creating response contents
 	@Override
 	protected void renderMergedOutputModel(
 		Map<String, Object> model,

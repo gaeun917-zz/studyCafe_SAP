@@ -15,13 +15,11 @@ public class ThePager {
 		int pageSize, int pagerSize, String linkUrl) {
 		
 		this.linkUrl = linkUrl;
-		
 		this.dataCount = dataCount;
 		this.pageSize = pageSize;
 		this.pagerSize = pagerSize;
 		this.currentPage = currentPage;		
-		pageCount = 
-			(dataCount / pageSize) + ((dataCount % pageSize) > 0 ? 1 : 0); 
+		pageCount = (dataCount / pageSize) + ((dataCount % pageSize) > 0 ? 1 : 0);
 	}
 	
 	public String toString(){
@@ -30,11 +28,11 @@ public class ThePager {
 		//1. 처음, 이전 항목 만들기
 		if (currentPage > 1) {
 			linkString.append(
-				String.format("[<a href='%s?pageno=1'>처음</a>]",linkUrl));
+					String.format("[<a href='%s?pageno=1'>처음</a>]",linkUrl));
 			linkString.append("&nbsp;");
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageno=%d'>이전</a>]", linkUrl, currentPage - 1));
+			linkString.append(
+					String.format("[<a href='%s?pageno=%d'>이전</a>]", linkUrl, currentPage - 1));
 			linkString.append("&nbsp;");
 		}
 		
@@ -43,13 +41,15 @@ public class ThePager {
 		int start = (pagerBlock * pagerSize) + 1;
 		int end = start + pagerSize;
 		for (int i = start; i < end; i++) {
-			if (i > pageCount) break;
+			if (i > pageCount)
+				break;
+
 			linkString.append("&nbsp;");
 			if(i == currentPage) {
 				linkString.append(String.format("[%d]", i));
 			} else { 
-				linkString.append(String.format(
-					"<a href='%s?pageno=%d'>%d</a>", linkUrl, i, i));
+				linkString.append(
+						String.format("<a href='%s?pageno=%d'>%d</a>", linkUrl, i, i));
 			}
 			linkString.append("&nbsp;");
 		}
@@ -57,14 +57,13 @@ public class ThePager {
 		//3. 다음, 마지막 항목 만들기
 		if (currentPage < pageCount) {
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageno=%d'>다음</a>]",linkUrl, currentPage + 1));
+			linkString.append(
+					String.format("[<a href='%s?pageno=%d'>다음</a>]", linkUrl, currentPage + 1));
 			linkString.append("&nbsp;");
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageno=%d'>마지막</a>]", linkUrl, pageCount));
+			linkString.append(
+					String.format("[<a href='%s?pageno=%d'>마지막</a>]", linkUrl, pageCount));
 		}
-		
 		return linkString.toString();
 	}
 
