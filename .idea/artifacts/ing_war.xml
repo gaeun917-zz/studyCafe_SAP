@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ing:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="studyCafe-1.0.0-BUILD-SNAPSHOT.war">
+      <element id="artifact" artifact-name="ing:war exploded" />
+    </root>
+  </artifact>
+</component>

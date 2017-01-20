@@ -1,27 +1,22 @@
 package com.studycafe.model.dao;
 
-import java.util.List;
-
 import com.studycafe.model.dto.BoardMember;
 import com.studycafe.model.dto.Member;
 
+import java.util.List;
+
 public interface MemberDao {
 
-//OracleMemberDao의 function을 여기서 나열! 
+//OracleMemberDao에서 아래 method 구현함
 
-	
-	
 	void insert(Member member);
 	void update(Member member);
 
 	List<Member> getList();
 
 	Member getMemberById(String id);
-
-	Member getMemberByIdAndPasswd(String id, String passwd);
-
 	Member getMemberByEmail(String email);
-	
+	Member getMemberByIdAndPasswd(String id, String passwd);
 	Member getMemberByMemberNo(int memberNo);
 
 	void changePassword(Member member);
@@ -31,6 +26,4 @@ public interface MemberDao {
 	List<BoardMember> selectBoardMemberByBoardNo(int boardNo);
 	
 	int selectBoardMemberCountByBoardNo(int boardNo);
-	
-	
 }

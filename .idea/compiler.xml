@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ing" target="1.5" />
+      <module name="ing" target="1.8" />
       <module name="spring4fs" target="1.5" />
     </bytecodeTargetLevel>
   </component>

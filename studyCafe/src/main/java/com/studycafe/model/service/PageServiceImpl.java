@@ -1,18 +1,13 @@
 package com.studycafe.model.service;
 
-import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.studycafe.model.dao.MemberDao;
-import com.studycafe.model.dao.PageBoardDao;
 import com.studycafe.model.dao.PageDao;
-import com.studycafe.model.dto.Member;
 import com.studycafe.model.dto.Page;
-import com.studycafe.model.dto.PageBoard;
 import com.studycafe.model.dto.PageImage;
 import com.studycafe.model.dto.PageMenu;
 
@@ -32,7 +27,7 @@ public class PageServiceImpl implements PageService {
 	@Override
 	public List<PageMenu> selectPageMenuByPageNo(int pageNo) {
 		
-		return pageDao.selectPageMenubyPageNo(pageNo);
+		return pageDao.selectPageMenuByPageNo(pageNo);
 	}
 
 	@Override

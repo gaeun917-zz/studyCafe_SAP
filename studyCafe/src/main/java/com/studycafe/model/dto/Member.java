@@ -13,24 +13,20 @@ public class Member implements Serializable {
 	
 	private int memberNo;
 	
-	@NotEmpty(message ="*아이디를 넣어주세요")
-	//@Pattern(regexp = "[A-Za-z0-9]{8,15}", message = "아이디 형식 오류")
+	@NotEmpty(message ="ID is required")
+	@Pattern(regexp = "[A-Za-z0-9]{8,15}", message = "Error")
 	private String memberId;
 	private String name;
 	
-	@NotEmpty(message ="*비밀번호를 넣어주세요")
-	@Pattern(regexp = "[A-Za-z0-9]{6,15}", message = "알파벳, 숫자 조합으로 6~15자리")
+	@NotEmpty(message ="Password is required")
+	@Pattern(regexp = "[A-Za-z0-9]{6,15}", message = "a combination of 6~15 alphabetical and numeric characters")
 	private String passwd;
 	private String confirmPasswd;
 
-	@NotEmpty(message ="*이메일을를 넣어주세요")
-	@Email(message ="*이메일 형식을 넣어주세요")
+	@NotEmpty(message ="Email is required")
+	@Email(message ="ex) abc@email.com")
 	private String email;
 	private Timestamp regDate;
-	
-	
-	//@NotEmpty
-	//@Pattern(regexp = "(user|admin){1}")
 	
 	private String gender;
 	private String facebookId;
@@ -126,9 +122,6 @@ public class Member implements Serializable {
 		this.name = name;
 		this.regDate = regDate;
 	}
-
-	
-	
 	
 	public void changePassword(String oldPassword, String newPassword) {
 		if (!passwd.equals(oldPassword))

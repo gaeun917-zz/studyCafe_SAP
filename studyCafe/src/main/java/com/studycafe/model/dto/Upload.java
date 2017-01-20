@@ -1,7 +1,6 @@
 package com.studycafe.model.dto;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class Upload implements Serializable {
 	
 	private List<UploadFile> files;
 	private List<Member> memberId;
-	
 	
 	public Upload() {}
 	
@@ -76,11 +74,9 @@ public class Upload implements Serializable {
 	public void setMemberId(List<Member> memberId) {
 		this.memberId = memberId;
 	}
-
 	public int getPageNo() {
 		return pageNo;
 	}
-
 	public void setPageNo(int pageNo) {
 		this.pageNo = pageNo;
 	}

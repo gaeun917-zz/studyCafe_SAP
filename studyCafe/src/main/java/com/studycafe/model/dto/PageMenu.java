@@ -33,4 +33,6 @@ public class PageMenu implements Serializable{
 	public void setPageNo(int pageNo) {
 		this.pageNo = pageNo;
 	}
+
+
 }

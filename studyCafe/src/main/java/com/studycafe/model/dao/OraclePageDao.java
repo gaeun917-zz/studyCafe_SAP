@@ -1,17 +1,15 @@
 package com.studycafe.model.dao;
 
-import java.sql.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Repository;
-
 import com.studycafe.model.dto.Page;
 import com.studycafe.model.dto.PageImage;
 import com.studycafe.model.dto.PageMenu;
 import com.studycafe.model.mapper.PageMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Repository("oraclePageDao")
 public class OraclePageDao implements PageDao {
@@ -27,7 +25,7 @@ public class OraclePageDao implements PageDao {
 	}
 
 	@Override
-	public List<PageMenu> selectPageMenubyPageNo(int pageNo) {
+	public List<PageMenu> selectPageMenuByPageNo(int pageNo) {
 		
 		return pageMapper.selectPageMenuList(pageNo);
 	}

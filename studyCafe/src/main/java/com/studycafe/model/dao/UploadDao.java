@@ -1,9 +1,9 @@
 package com.studycafe.model.dao;
 
-import java.util.List;
-
 import com.studycafe.model.dto.Upload;
 import com.studycafe.model.dto.UploadFile;
+
+import java.util.List;
 
 public interface UploadDao {
 
@@ -17,5 +17,4 @@ public interface UploadDao {
 	UploadFile getUploadFileByUploadFileNo(int uploadFileNo);
 	
 	int deleteUpload(int uploadNo);
-
 }

@@ -1,22 +1,21 @@
 package com.studycafe.model.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.studycafe.model.dto.BoardMember;
+import com.studycafe.model.dto.Member;
+import com.studycafe.model.mapper.MemberMapper;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import com.studycafe.model.dto.BoardMember;
-import com.studycafe.model.dto.Member;
-import com.studycafe.model.mapper.MemberMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository(value = "oracleMemberDao")
 public class OracleMemberDao implements MemberDao {
-	
-	
+
+
 	@Autowired
 	@Qualifier("sqlSessionTemplate")
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -25,12 +24,7 @@ public class OracleMemberDao implements MemberDao {
 	@Autowired
 	@Qualifier("memberMapper")
 	private MemberMapper memberMapper;
-	
-	private Map<String, Member> map = new HashMap<>();
 
-	
-//write down functions in OracleMemberDao "ON" MemberDao as a list!!!
-//	
 
 	public void insert(Member member) {		
 		memberMapper.insertMember(member);
@@ -38,6 +32,7 @@ public class OracleMemberDao implements MemberDao {
 	
 	
 	public void update(Member member) {
+		Map<String, Member> map = new HashMap<>();
 		map.put(member.getEmail(), member);
 	}
 	
@@ -62,7 +57,7 @@ public class OracleMemberDao implements MemberDao {
 	
 	
 	public Member getMemberByIdAndPasswd(String id, String passwd) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<>();
 		map.put("memberId", id);
 		map.put("passwd", passwd);
 		
@@ -73,7 +68,6 @@ public class OracleMemberDao implements MemberDao {
 
 	@Override
 	public Member getMemberByMemberNo(int memberNo) {
-		// TODO Auto-generated method stub
 		return memberMapper.selectMemberByMemberNo(memberNo);
 	}
 
@@ -89,7 +83,6 @@ public class OracleMemberDao implements MemberDao {
 		memberMapper.deleteByMemberNo(memberNo);
 		
 	}
-
 
 	@Override
 	public void insertBoardMemberByBoardNoMemberNo(BoardMember boardMember) {
