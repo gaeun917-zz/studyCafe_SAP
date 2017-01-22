@@ -19,15 +19,14 @@ import java.util.Locale;
 @Controller
 public class HomeController {
 
-	//2개 이상의 경로를 배열로 묶어서 매핑 가능
 	//	@RequestMapping(value = "/", method = RequestMethod.GET)
 	//	public String home1(Locale locale, Model model) {
-	//		return "index"; // /WEB-INF/views/ + index + .jsp
+	//		return "index";
 	//	}
 
 	//	@RequestMapping(value = "/home.action", method = RequestMethod.GET)
 	//	public String home2(Locale locale, Model model) {
-	//		return "index"; // /WEB-INF/views/ + index + .jsp
+	//		return "index";
 	//	}
 
 	@Autowired
@@ -41,7 +40,9 @@ public class HomeController {
 	@Autowired
 	@Qualifier("boardService")
 	private BoardService boardService;
-	
+
+
+	// @requestMapping에서 데이터 들어오는 경로가 2개 이상: 배열로 묶어서 매핑 가능
 	@RequestMapping(value = { "/", "home.action" }, method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
 

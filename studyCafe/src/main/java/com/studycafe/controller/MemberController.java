@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.studycafe.model.dto.Member;
 import com.studycafe.common.Util;
 
-@Controller //request 처리하고 view로 toss해 줌
+@Controller //request 받고-> db 처리 -> toss to view
 @RequestMapping(value = "/member/") //(value= url)로 접속해서 들어오는 client 요청을 받는 주소. 즉, 내 주소
 public class MemberController {
 
@@ -123,7 +123,8 @@ public class MemberController {
 	// 이건 data에 select 아니고, update처럼 db 처리만 하고 끝나는 경우에 씀.
 	// 따로 data를 받아야 될 경우(GET인 경우) model의 id, contents 필요하기 때문에 못씀
 	// 이 method는 void여도 되는데, string으로 해서 return 값에 의미없는 단어를 넣음
-	@RequestMapping(value = "changepassword.action", method = RequestMethod.POST)
+	// mapping은 array로 2 route: 작동 안되면 밑에 pw method()풀것
+	@RequestMapping(value = {"changepassword.action", "edit.action"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String changePassword(String currentPasswd, String newPasswd, HttpSession session) {
 
@@ -146,7 +147,10 @@ public class MemberController {
 			return "fail:invalid old password";
 		}
 	}
-
+//	@RequestMapping(value = "edit.action", method = RequestMethod.POST)
+//	public String password(@ModelAttribute Member member) {
+//		return "redirect:/member/changePassword.action";
+//	}
 	
 	@RequestMapping(value = "mypage.action", method = RequestMethod.GET)
 	public String myPage(Model model, HttpSession session) {
@@ -156,13 +160,6 @@ public class MemberController {
 
 		model.addAttribute("member", member);
 		return "member/mypage";
-	}
-
-	// changepw 있는데, 이건 edit에서 changepw 클릭하면 changepassword 패이지로 리다이렉트
-	// @requestMapping에 주소 2개 이상 쓸 수 없나?
-	@RequestMapping(value = "edit.action", method = RequestMethod.POST)
-	public String password(@ModelAttribute Member member) {
-		return "redirect:/member/changePassword.action";
 	}
 	
 //	register -> Mypage -> choose interest Category
