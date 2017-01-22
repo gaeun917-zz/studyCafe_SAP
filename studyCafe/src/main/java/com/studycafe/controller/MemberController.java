@@ -165,9 +165,7 @@ public class MemberController {
 		// 파라미터로 들어오는 Member에 데이터 다 들어 있음-> sql update만 하면됨
 		// 패스워드는 hash로 넣으려고 일부러 setPassword로 함!
 
-
-		//BindingResult.hasErrors() 의 역활은 @valid을 체크 하여,오류가 있는지를
-
+		//  BindingResult: @valid을 체크 하여,오류가 있는지를 확인
 		if(bindingResult.hasErrors()){
 			return "member/registerform2";
 		}

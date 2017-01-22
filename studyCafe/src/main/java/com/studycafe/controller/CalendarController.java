@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,12 +32,6 @@ public class CalendarController{
 	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
 
-	//
-
-
-
-
-
 
 
 	@Autowired
@@ -51,7 +44,7 @@ public class CalendarController{
 		
 	//1. 일정 달력에 전부 보여주기
 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
-	public ModelAndView list(Model model, HttpSession session, int memberpageno) {
+	public ModelAndView list(HttpSession session, int memberpageno) {
 
 		//1. loginuser로부터 pageNo, pageMenu, pageMenuByPageNotice, CalendarList 구하기
 		Member member = (Member) session.getAttribute("loginuser");
