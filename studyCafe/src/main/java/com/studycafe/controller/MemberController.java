@@ -1,24 +1,19 @@
 package com.studycafe.controller;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.HttpSession;
-
+import com.studycafe.common.Util;
+import com.studycafe.model.dto.Member;
 import com.studycafe.model.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.studycafe.model.dto.Member;
-import com.studycafe.common.Util;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Controller //request 받고-> db 처리 -> toss to view
 @RequestMapping(value = "/member/") //(value= url)로 접속해서 들어오는 client 요청을 받는 주소. 즉, 내 주소
@@ -165,11 +160,15 @@ public class MemberController {
 //	register -> Mypage -> choose interest Category
 	// BindingResult? register form에 적어 넣은 내용?
 	@RequestMapping(value = "register.action", method = RequestMethod.POST)
-	public String register(@Valid @ModelAttribute("member")Member member, BindingResult result) {
+	public String register(@Valid @ModelAttribute("member")Member member, BindingResult bindingResult) {
 		// register.jsp에서 form에 입력한 데이터 member에 저장되어 있음
 		// 파라미터로 들어오는 Member에 데이터 다 들어 있음-> sql update만 하면됨
 		// 패스워드는 hash로 넣으려고 일부러 setPassword로 함!
-		if(result.hasErrors()){
+
+
+		//BindingResult.hasErrors() 의 역활은 @valid을 체크 하여,오류가 있는지를
+
+		if(bindingResult.hasErrors()){
 			return "member/registerform2";
 		}
 		member.setPasswd(Util.getHashedString(member.getPasswd(), "SHA-256"));		

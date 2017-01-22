@@ -24,139 +24,129 @@ public class AccountController {
 	@Autowired
 	@Qualifier("memberService")
 	private MemberService memberService;
-	
+
 	@Autowired
 	@Qualifier("pageService")
 	private PageService pageService;
-	
+
 	@Autowired
 	@Qualifier("pageMenuService")
-	
+
 	@RequestMapping(value = "/login.action", method = RequestMethod.GET)
 	public String loginForm() {
 		return "account/loginform";
 	}
-	
+
 	@RequestMapping(value = "/login.action", method = RequestMethod.POST)
-	@ResponseBody   // responseBody: 메소드가 반환하는 값이 페이지 이름이 아니고, 데이터 그 자체임! db에 post만 하고 끝나기 때문에 from 주소만 있으면 됨
+	@ResponseBody   // 데이터 보내는거 model 필요없음, 데이터 그 자체임! db에 post만 하고 끝나기 때문에
 	public String login(String memberId, String passwd, HttpSession session) {
 
+		//1. 로그인: getMemberByIdAndPasswd(id, passwd)
 		passwd = Util.getHashedString(passwd, "SHA-256");
+		Member member = memberService.login(memberId, passwd);
 
-		Member member = memberService.login(memberId, passwd);// getMemberByIdAndPasswd(id, passwd);
-		if (member != null) {
-			session.setAttribute("loginuser", member);// 세션에 로그인 정보 저장
+		if (member != null) {                //1.1 로그인 성공
+			//2. 세션에 로그인 정보 저장
+			session.setAttribute("loginuser", member);
 
+			//3. 페이지 넘버 구하기
 			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
-			if(pages != null){
-				session.setAttribute("userpages",pages);
+			if (pages != null) {            //3.1 페이지 넘버 성공
+				//4. 세션에 페이지 넘버 저장
+				session.setAttribute("userpages", pages);
 			}
 			return "success";
-			
-		} else {
+		} else {                            //1.0 로그인 실패(db에서 id,pw matching 찾을 수 없으면)
 			return "fail";
 		}
 	}
 
-	
+
 	@RequestMapping(value = "/check-duplicate.action", method = RequestMethod.POST)
-	@ResponseBody   // responseBody: 메소드가 반환하는 값이 페이지 이름이 아니고, 데이터 그 자체임!
-	public String checkDuplicate(String memberId) {
-		
+	@ResponseBody
+	public String checkDuplicate(String memberId) {        // 같은 아이디 존재여부확인
+		// 1. 해당 id가 db에 존재하는지 확인
 		Member member = memberService.searchMemberByMemberId(memberId);
-		
-		if (member != null) {
-			return "fail"; 			
-		} else {			
+
+		if (member != null) {   //1.0 같은 아이디 있음
+			return "fail";
+		} else {                //1.1 같은 아이디 없음
 			return "success";
-		}		
-		
+		}
 	}
 
 
 	@RequestMapping(value = "/facebookLogin.action", method = RequestMethod.POST)
 	@ResponseBody
-	public String facebooklogin(String name, HttpSession session) {
-		//페이스 북은 세션 정보만 전해주지 그 세션 정보를 저장할 수 없음.
-		session.setAttribute("facebookLoginuser", name);
-//		Member member = memberService.login(memberId, passwd);
-//		if (member != null) {
-//			//세션에 로그인 정보 저장
-//			session.setAttribute("facebookLoginuser", member);
-//			return "redirect:/home.action"; 
-//		} else {
-//			return "account/loginform";
-//		}		
+	public String facebooklogin(String FBid, HttpSession session) {
+		//페이스 북 아이디 세션에 저장: fbid를 db에 저장을 못함 -> 가입안됨
+		session.setAttribute("facebookLoginuser", FBid);
 		return "success";
 	}
-	
+
+
 	@RequestMapping(value = "/kakaoLogin.action", method = RequestMethod.POST)
 	@ResponseBody
-	public String kakaologin(String nickname, HttpSession session) {
-
-		session.setAttribute("kakaoLoginuser", nickname);
-//		Member member( = memberService.login(memberId, passwd);
-//		if (member != null) {
-//			//세션에 로그인 정보 저장
-//			session.setAttribute("loginuser", member);
-//			return "redirect:/home.action"; 
-//		} else {
-//			return "account/loginform";
-//		}		
+	public String kakaologin(String kakaoId, HttpSession session) {
+		session.setAttribute("kakaoLoginuser", kakaoId);
 		return "success";
 	}
-	
+
 	@RequestMapping(value = "/logout.action", method = RequestMethod.GET)
 	public String logout(HttpSession session) {
-		
-		session.removeAttribute("loginuser");//로그아웃
-		session.removeAttribute("userpages");//로그아웃
-		
+		session.removeAttribute("loginuser");
+		session.removeAttribute("userpages");
 		return "redirect:/home.action";
 	}
-	
+
+
 	@RequestMapping(value = "/facebookLogout.action", method = RequestMethod.GET)
 	public String facebookLogout(HttpSession session) {
-		
 		session.removeAttribute("facebookLoginuser");
 		return "redirect:/home.action";
 	}
-	
+
 	@RequestMapping(value = "/kakaoLogout.action", method = RequestMethod.GET)
 	public String kakaoLogout(HttpSession session) {
-		
 		session.removeAttribute("kakaoLoginuser");
 		return "redirect:/home.action";
 	}
-	
+
 	@RequestMapping(value = "/pageList.action", method = RequestMethod.GET, produces = "text/plain; charset=utf8")
 	@ResponseBody
 	public String getpageList(HttpSession session, HttpServletResponse response) {
-		
-		Member member = (Member) session.getAttribute("loginuser");
-		if(member == null){// return을 html로 함! pageList의 <form>에서 받나봄
-			return "<hr><li style='text-align: center'>Please Login...</li><hr>";
-		}
 
-		List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
-		if(pages == null){
-			return "<hr><li style='text-align: center'>No Search Your Room</li><hr>";
+		//1. session Member 구하기
+		Member member = (Member) session.getAttribute("loginuser");
+		if (member == null) {// return을 html로 함! pageList의 <form>에서 받나봄
+			return "<hr><li style='text-align: center'>Please Login...</li><hr>";
+		} else {
+
+			//2. pageNo 구하기 (세션에 저장되어 있음)
+			List<Page> pages = (List<Page>) session.getAttribute("userpages");
+//			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
+			if (pages == null) {
+				return "<hr><li style='text-align: center'>No Search Your Room</li><hr>";
+			} else {
+
+				//3. 페이지 메뉴 보여주기
+				String html = "";
+				for (Page page : pages) {
+					//System.out.println(page.getName());
+					PageMenu menu = pageService.selectPageMenuByPageNoNotice(page.getPageNo());
+					//System.out.println(menu.getMenuNo());
+
+					//4. html/js string
+					html += "<hr><li style='text-align: center'>" +
+							"<a href=\"javascript:" +
+							"window.open('/studyCafe/page/board/list.action?" +
+							"menuno=" + menu.getMenuNo() +
+							"&memberpageno=" + page.getPageNo() +
+							"', '', 'width=1200, height=1000, resizable=yes');" +
+							"\">" + page.getName() + "</a></li><hr>";
+				}
+				return html;
+			}
 		}
-		
-		String html = "";
-		for(Page page : pages){
-			System.out.println(page.getName());
-			PageMenu menu = pageService.selectPageMenuByPageNoNotice(page.getPageNo());
-			System.out.println(menu.getMenuNo());
-			html +=  "<hr><li style='text-align: center'>" +
-						"<a href=\"javascript:" +
-									"window.open('/studyCafe/page/board/list.action?" +
-												"menuno=" + menu.getMenuNo() +
-												"&memberpageno=" + page.getPageNo() +
-												"', '', 'width=1200, height=1000, resizable=yes');" +
-						"\">"+  page.getName() +"</a></li><hr>";
-		}
-		return html;
 	}
 }
-
