@@ -3,7 +3,6 @@ package com.studycafe.controller;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import com.studycafe.model.service.MemberService;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.studycafe.model.dao.MemberDao;
 import com.studycafe.model.dto.Member;
 import com.studycafe.common.Util;
 
@@ -41,6 +39,7 @@ public class MemberController {
 		// 3. .addAttribute(id, value)함: nametag(id)에 데이터 처리된 애를 담아서,
 		// 4. return(To) jsp 주소로 내용을 보내달라고 함
 		// * jsp는 이 소포를 받음: Model이가 정한 id로 .addAttribute한 내용 꺼내씀: ${ members }
+		// * model을 쓰면 return 값이 jsp 주소 이므로, return datatype은 String이 어야함.
 		
 		//1. 데이터 조회 (memberServiceZ(interface)에는 dao와 같은 method list
 		// -> implement한 애들은 Mapper와 연결해줌)
@@ -67,14 +66,21 @@ public class MemberController {
 //		//2. 데이터 저장 (jsp에서 사용할 수 있도록)
 //		ModelAndView mav = new ModelAndView("member/list"); // mav 객체 만들면서 return 주소부터 줌
 //		mav.addObject("members", members);        // 보내야 되는 소포 addObject(nametag, 내용);
-//		
+//		// 아니면
+//		ModelAndView mav = new ModelAndView() 하고 상황 별로 보내버리기 위해서
+// 		mav.setViewName("abc"); 할 수 있음
 //		//3. 뷰 반환
 //		return mav;		
 //	}
-	
+
+
 	@RequestMapping(value = "view.action", method = RequestMethod.GET)
 	public String view(@RequestParam("memberid") String memberId, Model model) {
-					//requestParam은 httpRequest를 메서드에(String memberId) 바로 전달해준다.
+
+					// @requestParam은 mapping에서 들어오는 value를
+					// httpRequest 대신해서 파라미터에(String memberId) 바로 전달해준다.
+					// 즉, String memberid = request.getParameter("memberId") 안해도됨  			// boardNo
+
 		if (memberId == null || memberId.length() == 0) {
 			return "redirect:/member/list.action";
 		}
@@ -97,9 +103,11 @@ public class MemberController {
 	
 	@RequestMapping(value = "register.action", method = RequestMethod.GET)
 	public String registerForm(@ModelAttribute("member")Member member) {
-		//@ModelAttribute: 스프링 taglib를<form:form> 사용하기 위해 전달인자
-		// ModelAttribute는 addAttribute 대신
-		//member.setRegDate(new Timestamp(new Date()));
+		// 중요! @ModelAttribute: 스프링 taglib를 <form:form> 사용하기 위해 전달인자
+		// ModelAttribute는 addAttribute 대신 (nametag를 파라미터에서 설정)-> 보내주는 컨텐츠는 member
+		// @ModelA가 젤 첫번째 파라미터로 와야된다고 들었음..
+		member.setRegDate(new Timestamp(System.currentTimeMillis()));
+		//timestamp parameter는 Long type이어야함
 		return "member/registerform2";
 	}
 
@@ -111,23 +119,30 @@ public class MemberController {
 		return "member/registerSuccess";
 	}
 
-
+	// 중요! @responseBody: 데이터 자체를 보내줌 -> model 할 필요없음,
+	// 이건 data에 select 아니고, update처럼 db 처리만 하고 끝나는 경우에 씀.
+	// 따로 data를 받아야 될 경우(GET인 경우) model의 id, contents 필요하기 때문에 못씀
+	// 이 method는 void여도 되는데, string으로 해서 return 값에 의미없는 단어를 넣음
 	@RequestMapping(value = "changepassword.action", method = RequestMethod.POST)
 	@ResponseBody
-	public String changePassword(String oldPasswd, String newPasswd, HttpSession session) {
+	public String changePassword(String currentPasswd, String newPasswd, HttpSession session) {
 
 		//1. 세션의 사용자 정보 읽기
 		Member member  = (Member) session.getAttribute("loginuser");		
-		oldPasswd = Util.getHashedString(oldPasswd, "SHA-256");			
+		currentPasswd = Util.getHashedString(currentPasswd, "SHA-256");
+		// member.getPasswd()로 구해도 되지만, 이미 파라미터로 password받음
+		// > 보안을 위해 hashcode로 변경
 
-		//2. memeber 아이디와 oldPasswd를 이용해서 조회 수행
-		Member member2 =  memberService.login(member.getMemberId(), oldPasswd);
 
-		if (member2 != null) {	//3-1. 조회가 성공: 아이디와 newPasswd를 이용해서 비밀번호 변경
+		//2. member 아이디와 currentPasswd로 db에서 selectMember
+		Member member2 =  memberService.login(member.getMemberId(), currentPasswd);
+		if (member2 != null) {	//2.1 조회 성공
+
+		//3. 새 패스워드 설정
 			member2.setPasswd(Util.getHashedString(newPasswd, "SHA-256"));
-			memberService.changePassword(member2);
+			memberService.changePassword(member2); // parameter가 Member여야함
 			return "success";
-		} else {	//3-2. 2의 조회가 실패하면 실패 메시지 전송 
+		} else {				//2.0 조회 실패
 			return "fail:invalid old password";
 		}
 	}
@@ -135,36 +150,37 @@ public class MemberController {
 	
 	@RequestMapping(value = "mypage.action", method = RequestMethod.GET)
 	public String myPage(Model model, HttpSession session) {
+
 		Member member  = (Member) session.getAttribute("loginuser");
 		memberService.getMemberByMemberNo(member.getMemberNo());// 접속자#로 멤버 data GET
 
-		model.addAttribute("member", member);// data를 jsp로 보냄
+		model.addAttribute("member", member);
 		return "member/mypage";
 	}
 
-
+	// changepw 있는데, 이건 edit에서 changepw 클릭하면 changepassword 패이지로 리다이렉트
+	// @requestMapping에 주소 2개 이상 쓸 수 없나?
 	@RequestMapping(value = "edit.action", method = RequestMethod.POST)
 	public String password(@ModelAttribute Member member) {
-		// pw update SQL on MemebrMapper
 		return "redirect:/member/changePassword.action";
-		
 	}
 	
-//	register -> MemeberData view page -> choose interest Category
+//	register -> Mypage -> choose interest Category
+	// BindingResult? register form에 적어 넣은 내용?
 	@RequestMapping(value = "register.action", method = RequestMethod.POST)
 	public String register(@Valid @ModelAttribute("member")Member member, BindingResult result) {
 		// register.jsp에서 form에 입력한 데이터 member에 저장되어 있음
+		// 파라미터로 들어오는 Member에 데이터 다 들어 있음-> sql update만 하면됨
+		// 패스워드는 hash로 넣으려고 일부러 setPassword로 함!
 		if(result.hasErrors()){
 			return "member/registerform2";
 		}
-		
 		member.setPasswd(Util.getHashedString(member.getPasswd(), "SHA-256"));		
 		memberService.insertMember(member);
 		return "redirect:/member/registerSuccess.action?memberId="+member.getMemberId();
-
 	}
 
-	
+
 	@RequestMapping(value = "delete.action", method = RequestMethod.GET)
 	public String delete(HttpSession session) {
 		Member member  = (Member) session.getAttribute("loginuser");
@@ -172,6 +188,5 @@ public class MemberController {
 
 		session.removeAttribute("loginuser");
 		return "redirect:/";
-
 	}
 }

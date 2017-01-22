@@ -158,13 +158,15 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 	@RequestMapping(value = "write.action", method = RequestMethod.POST)
 	public ModelAndView Board(
 				MultipartHttpServletRequest multiReq, HttpSession session, Board board) {
-			ModelAndView mav = new ModelAndView();
+
 			//1. loginuser 구하기
 			Member member = (Member) session.getAttribute("loginuser");
+
 			//2. 위에 만든 method로 모임 보드에 파일 등록
 			processBoard(multiReq, board, member.getMemberNo());
-			//3.mav 주소 선정, 패키지는?
-			mav.setViewName("redirect:/board/list.action");
+
+			//3.mav to 주소 선정: Board는 processBoard 수행하게하는 method()이고, 따로 data 수행 없음
+			ModelAndView mav = new ModelAndView("redirect:/board/list.action");
 			return mav;
 		}
 
@@ -173,15 +175,17 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 	public String list(Model model) {
 
 		List<Board> boards = boardService.selectBoardList();
-		ArrayList<Member> members = new ArrayList<>();
+		ArrayList<Member> members = new ArrayList<>(); // capacity 설정 안함. 지 맘대로 늘어남
 		ArrayList<SmallCategory> smallCategory = new ArrayList<>();
+		// for statement 안에서 처음 쓰이고, 밖에서도 쓰이기 때문에 global로 declare 해줘야함
 
 		// 1. member, sC구하기
 		for (Board b : boards) {
 			Member member = memberService.getMemberByMemberNo(b.getMemberNo());
 			SmallCategory category =
 							smallCategoryService.selectSmallCNameBySmallCNo(b.getSmallCategoryNo());
-		//2. member, sc에 구한값 add하기
+
+			//2. member, sc에 구한값 add하기
 			members.add(member);
 			smallCategory.add(category);
 		}
@@ -205,7 +209,7 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		//1. 해당 보드의 멤버구하기 (ArrayList로.. 멤버 여러명임)
 		for (Board b : boards) {
 			Member member = memberService.getMemberByMemberNo(b.getMemberNo());
-			members.add(member);
+			members.add(member);// ArrayList에 담음
 		}
 
 		//2. model에 memberinfo 전달
@@ -238,7 +242,7 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 
 	@RequestMapping(value = "detail.action", method = RequestMethod.GET)
 	public ModelAndView showBoardByBoardNo(HttpServletRequest request, HttpSession session) {
-		ModelAndView mav = new ModelAndView();
+		ModelAndView mav = new ModelAndView(); // mav를 가지고 각각의 if null에 대해서 다양한 경로로 보내버림
 
 		// 1. boardNo 구하기(request)
 		String boardNo = request.getParameter("boardno"); 			// boardNo
@@ -287,6 +291,8 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		int pBoardNo = Integer.parseInt(boardNo); 				// parsing
 
 		if (boardNo == null || boardNo.length() == 0) {			//1.0 보드넘버 null
+			// 여기서 mav에 .addObject()한 게 없으면, 그냥 return으로만 처리 할 수 있지 않나?
+			// -> 위에 보면 return 값이 ModelAndView 이다. 무조건 여기 담아서 보내야 한다..이런..
 			mav.setViewName("redirect:/board/list.action");
 			return mav;
 
@@ -307,7 +313,9 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 
 	@RequestMapping(value = "delete.action", method = RequestMethod.GET)
 	public String deleteBoard(@RequestParam("boardno") int boardNo) {
-		// request로 <form>에서 현재 보드 페이지 파라미터로 받아옴 -> 따로 boardNo읽을 필요 없음
+		// @requestParam이 <form>에서 현재 boardno를 파라미터로 받아옴
+		// = req.getParameter('boardno')
+
 		// 1. 데이터 처리 (db에서 데이터)
 		Board board = boardService.selectBoardByBoardNo(boardNo);
 		Date dDate = java.sql.Date.valueOf("2016-05-22"); 			// java.util이 아닌 sql
@@ -329,7 +337,7 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 
 		BoardMember boardMember = new BoardMember();
 					boardMember.setMemberNo(member.getMemberNo());
-		boardMember.setBoardNo(boardno);
+					boardMember.setBoardNo(boardno);
 
 		// 2. 모임에 참가
 		memberService.insertBoardMemberByBoardNoAndMemberNo(boardMember);
