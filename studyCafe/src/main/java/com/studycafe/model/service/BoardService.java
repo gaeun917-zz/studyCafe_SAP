@@ -1,10 +1,10 @@
 package com.studycafe.model.service;
 
-import java.util.List;
-
 import com.studycafe.model.dto.Board;
 import com.studycafe.model.dto.BoardFile;
 import com.studycafe.model.dto.SmallCategory;
+
+import java.util.List;
 
 public interface BoardService {
 
@@ -13,9 +13,10 @@ public interface BoardService {
 	
 	List<Board> selectBoardList();
 	Board selectBoardByBoardNo(int boardNo);
+	Board selectBoardByBoardNo2(int boardNo);
+
 	Board selectByCategory(int smallCategoryNo);
 	SmallCategory selectSmallCategoryByBoardNo(int sCNo);
-	Board selectBoardByBoardNo2(int boardNo);
 	List<Board> selectBoardListBySmallCategoryNo();
 	void deleteBoard(int boardNo);
 	

@@ -1,22 +1,27 @@
 package com.studycafe.model.service;
 
-import java.util.List;
-
 import com.studycafe.model.dto.BoardMember;
 import com.studycafe.model.dto.Member;
 
+import java.util.List;
+
 public interface MemberService {
 
-	void registerMember(Member member);
-	
-	List<Member> getAllMembers();
+	void insertMember(Member member);
+	void update(Member member);
+
+	List<Member> getList();
+
 	Member searchMemberByMemberId(String id);
-	
+	Member getMemberByEmail(String email);
 	Member login(String id, String passwd);
-	
 	Member getMemberByMemberNo(int memberNo);
-	
-	void insertBoardMemberByBoardNoMemberNo(BoardMember boardMember);
+
+	void changePassword(Member member);
+	void deleteByMemberNo(int memberNo);
+
+	//board 관련
+	void insertBoardMemberByBoardNoAndMemberNo(BoardMember boardMember);
 	List<BoardMember> selectBoardMemberByBoardNo(int boardNo);
 	int selectBoardMemberCountByBoardNo(int boardNo);
 }

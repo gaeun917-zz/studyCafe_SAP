@@ -21,9 +21,9 @@ public interface MemberDao {
 
 	void changePassword(Member member);
 	void deleteByMemberNo(int memberNo);
-	
+
+	//board 관련
 	void insertBoardMemberByBoardNoMemberNo(BoardMember boardMember);
 	List<BoardMember> selectBoardMemberByBoardNo(int boardNo);
-	
 	int selectBoardMemberCountByBoardNo(int boardNo);
 }

@@ -1,43 +1,26 @@
 package com.studycafe.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.AlternativeJdkIdGenerator;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.studycafe.model.dao.MemberDao;
+import com.studycafe.common.Util;
 import com.studycafe.model.dto.Member;
 import com.studycafe.model.dto.Page;
 import com.studycafe.model.dto.PageMenu;
 import com.studycafe.model.service.MemberService;
 import com.studycafe.model.service.PageService;
-import com.studycafe.common.Util;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/account")
 public class AccountController {
-	
-	//svn test code
-	
-	//private MemberDao dao = new OracleMemberDao();
-//	@Autowired
-//	@Qualifier("oracleMemberDao")
-//	private MemberDao dao;
-//	public void setMemberDao(MemberDao memberDao) {
-//		this.dao = memberDao;
-//	}
+
 	@Autowired
 	@Qualifier("memberService")
 	private MemberService memberService;
@@ -52,34 +35,29 @@ public class AccountController {
 	@RequestMapping(value = "/login.action", method = RequestMethod.GET)
 	public String loginForm() {
 		return "account/loginform";
-		// /WEB-INF/views/ + account/loginform + .jsp
 	}
 	
 	@RequestMapping(value = "/login.action", method = RequestMethod.POST)
-	@ResponseBody   // responseBody: 메소드가 반환하는 값이 페이지 이름이 아니고, 데이터 그 자체임!
+	@ResponseBody   // responseBody: 메소드가 반환하는 값이 페이지 이름이 아니고, 데이터 그 자체임! db에 post만 하고 끝나기 때문에 from 주소만 있으면 됨
 	public String login(String memberId, String passwd, HttpSession session) {
-		passwd = Util.getHashedString(passwd, "SHA-256");	
-		
-		Member member = memberService.login(memberId, passwd);
-		
+
+		passwd = Util.getHashedString(passwd, "SHA-256");
+
+		Member member = memberService.login(memberId, passwd);// getMemberByIdAndPasswd(id, passwd);
 		if (member != null) {
-			//세션에 로그인 정보 저장
-			session.setAttribute("loginuser", member);
+			session.setAttribute("loginuser", member);// 세션에 로그인 정보 저장
+
 			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 			if(pages != null){
 				session.setAttribute("userpages",pages);
 			}
-			//List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
-			return "success"; 
+			return "success";
 			
 		} else {
-			
 			return "fail";
-		}		
-		
+		}
 	}
-	
-	
+
 	
 	@RequestMapping(value = "/check-duplicate.action", method = RequestMethod.POST)
 	@ResponseBody   // responseBody: 메소드가 반환하는 값이 페이지 이름이 아니고, 데이터 그 자체임!
@@ -94,16 +72,17 @@ public class AccountController {
 		}		
 		
 	}
+
+
 	@RequestMapping(value = "/facebookLogin.action", method = RequestMethod.POST)
 	@ResponseBody
 	public String facebooklogin(String name, HttpSession session) {
-		//passwd = Util.getHashedString(passwd, "SHA-256");	
-		
+		//페이스 북은 세션 정보만 전해주지 그 세션 정보를 저장할 수 없음.
 		session.setAttribute("facebookLoginuser", name);
-//		Member member( = memberService.login(memberId, passwd);
+//		Member member = memberService.login(memberId, passwd);
 //		if (member != null) {
 //			//세션에 로그인 정보 저장
-//			session.setAttribute("loginuser", member);
+//			session.setAttribute("facebookLoginuser", member);
 //			return "redirect:/home.action"; 
 //		} else {
 //			return "account/loginform";
@@ -114,8 +93,7 @@ public class AccountController {
 	@RequestMapping(value = "/kakaoLogin.action", method = RequestMethod.POST)
 	@ResponseBody
 	public String kakaologin(String nickname, HttpSession session) {
-		//passwd = Util.getHashedString(passwd, "SHA-256");	
-		
+
 		session.setAttribute("kakaoLoginuser", nickname);
 //		Member member( = memberService.login(memberId, passwd);
 //		if (member != null) {
@@ -140,16 +118,14 @@ public class AccountController {
 	@RequestMapping(value = "/facebookLogout.action", method = RequestMethod.GET)
 	public String facebookLogout(HttpSession session) {
 		
-		session.removeAttribute("facebookLoginuser");//로그아웃
-		
+		session.removeAttribute("facebookLoginuser");
 		return "redirect:/home.action";
 	}
 	
 	@RequestMapping(value = "/kakaoLogout.action", method = RequestMethod.GET)
 	public String kakaoLogout(HttpSession session) {
 		
-		session.removeAttribute("kakaoLoginuser");//로그아웃
-		
+		session.removeAttribute("kakaoLoginuser");
 		return "redirect:/home.action";
 	}
 	
@@ -158,9 +134,10 @@ public class AccountController {
 	public String getpageList(HttpSession session, HttpServletResponse response) {
 		
 		Member member = (Member) session.getAttribute("loginuser");
-		if(member == null){
+		if(member == null){// return을 html로 함! pageList의 <form>에서 받나봄
 			return "<hr><li style='text-align: center'>Please Login...</li><hr>";
 		}
+
 		List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 		if(pages == null){
 			return "<hr><li style='text-align: center'>No Search Your Room</li><hr>";
@@ -171,16 +148,15 @@ public class AccountController {
 			System.out.println(page.getName());
 			PageMenu menu = pageService.selectPageMenuByPageNoNotice(page.getPageNo());
 			System.out.println(menu.getMenuNo());
-			html +=  "<hr><li style='text-align: center'><a href=\"javascript:window.open('/studyCafe/page/board/list.action?menuno=" +
-						menu.getMenuNo() +	
-						"&memberpageno=" +
-						page.getPageNo() +
-						"', '', 'width=1200, height=1000, resizable=yes');" +
+			html +=  "<hr><li style='text-align: center'>" +
+						"<a href=\"javascript:" +
+									"window.open('/studyCafe/page/board/list.action?" +
+												"menuno=" + menu.getMenuNo() +
+												"&memberpageno=" + page.getPageNo() +
+												"', '', 'width=1200, height=1000, resizable=yes');" +
 						"\">"+  page.getName() +"</a></li><hr>";
 		}
-		
 		return html;
-
 	}
 }
 

@@ -17,18 +17,28 @@ public class MemberServiceImpl implements MemberService {
 	private MemberDao memberDao;
 
 	@Override
-	public void registerMember(Member member) {
-		memberDao.insert(member);
+	public void insertMember(Member member) {
+				memberDao.insert(member);
 	}
-	
+
 	@Override
-	public List<Member> getAllMembers() {
+	public void update(Member member) {
+				memberDao.update(member);
+	}
+
+	@Override
+	public List<Member> getList() {
 		return memberDao.getList();
 	}
 
 	@Override
 	public Member searchMemberByMemberId(String id) {
 		return memberDao.getMemberById(id);
+	}
+
+	@Override
+	public Member getMemberByEmail(String email) {
+		return memberDao.getMemberByEmail(email);
 	}
 
 	@Override
@@ -42,8 +52,18 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void insertBoardMemberByBoardNoMemberNo(BoardMember boardMember) {
-		memberDao.insertBoardMemberByBoardNoMemberNo(boardMember);
+	public void changePassword(Member member) {
+				memberDao.changePassword(member);
+	}
+
+	@Override
+	public void deleteByMemberNo(int memberNo) {
+				memberDao.deleteByMemberNo(memberNo);
+	}
+
+	@Override
+	public void insertBoardMemberByBoardNoAndMemberNo(BoardMember boardMember) {
+				memberDao.insertBoardMemberByBoardNoMemberNo(boardMember);
 	}
 
 	@Override

@@ -4,6 +4,6 @@ import com.studycafe.model.dto.SmallCategory;
 
 public interface SmallCategoryService {
 	
-	SmallCategory selectSmallCategoryNameBySmallCategoryNo(int smallCategoryNo);
+	SmallCategory selectSmallCNameBySmallCNo(int smallCategoryNo);
 	
 }

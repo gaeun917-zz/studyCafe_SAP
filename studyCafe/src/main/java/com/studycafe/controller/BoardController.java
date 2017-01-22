@@ -1,15 +1,9 @@
 package com.studycafe.controller;
 
-import java.io.File;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.studycafe.model.dto.*;
+import com.studycafe.model.service.BoardService;
+import com.studycafe.model.service.MemberService;
+import com.studycafe.model.service.SmallCategoryService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,60 +16,44 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.studycafe.common.Util;
-import com.studycafe.model.dao.BoardDao;
-import com.studycafe.model.dao.MemberDao;
-import com.studycafe.model.dto.Board;
-import com.studycafe.model.dto.BoardFile;
-import com.studycafe.model.dto.BoardMember;
-import com.studycafe.model.dto.Member;
-import com.studycafe.model.dto.Page;
-import com.studycafe.model.dto.PageMenu;
-import com.studycafe.model.dto.SmallCategory;
-import com.studycafe.model.dto.Upload;
-import com.studycafe.model.dto.UploadFile;
-import com.studycafe.model.service.BoardService;
-import com.studycafe.model.service.MemberService;
-import com.studycafe.model.service.SmallCategoryService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/board")
 public class BoardController implements ApplicationContextAware, BeanNameAware {
 
-
-
-
-
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+	private ApplicationContext context;
+	@Override
+	public void setApplicationContext(ApplicationContext arg0)
+			throws BeansException {
+		this.context = arg0;
 	}
 
-
-
-
-
-	private ApplicationContext context;
 	private String beanName;
 	@Override
 	public void setBeanName(String arg0) {
-		this.beanName = arg0;		
+		this.beanName = arg0;
 	}
-	@Override
-	public void setApplicationContext(ApplicationContext arg0) throws BeansException {
-		this.context = arg0;
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		SimpleDateFormat dateFormat =
+				new SimpleDateFormat("yyyy-MM-dd");
+		binder.registerCustomEditor(
+				Date.class, new CustomDateEditor(dateFormat, false));
 	}
-	
+
 	@Autowired
 	@Qualifier("boardService")
 	private BoardService boardService;
@@ -88,13 +66,6 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 	@Qualifier("smallCategoryService")
 	private SmallCategoryService smallCategoryService;
 
-	@Autowired
-	@Qualifier(value = "oracleBoardDao")
-	BoardDao dao;
-
-	@Autowired
-	@Qualifier(value = "oracleMemberDao")
-	MemberDao dao2;
 
 	@Autowired
 	@Qualifier("txManager")
@@ -104,14 +75,16 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 	@Qualifier("txTemplate")
 	TransactionTemplate txTemplate;
 
+
 	@RequestMapping(value = "write.action", method = RequestMethod.GET)
 	public String getboardWriteForm() {
-
 		return "board/writeform2";
 	}
 
 	/*@RequestMapping(value = "write.action", method = RequestMethod.POST)
-	public String writeBoard(HttpServletRequest req, Date closeDate, Date startDate, int memberCount, int frequency) {
+	public String writeBoard(HttpServletRequest req, Date closeDate,
+								Date startDate, int memberCount, int frequency) {
+
 		// 1. 브라우저에 사용자가 입력한 데이터를 읽어서 변수에 저장 (요청 정보에서 데이터 읽기)
 		String title = req.getParameter("title");
 		String content = req.getParameter("content");
@@ -122,115 +95,120 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		Member member = (Member) req.getSession().getAttribute("loginuser");
 
 		Board board = new Board();
-		board.setTitle(title);
-		board.setSmallCategoryNo(Integer.parseInt(smallCategory));
-		board.setMemberNo(member.getMemberNo());
-		board.setContent(content);
-		board.setCloseDate(closeDate);
-		board.setStartDate(startDate);
-		board.setMemberCount(memberCount);
-		board.setPlace(place);
-		board.setPurpose(purpose);
-		board.setPeriod(period);
-		board.setFrequency(frequency);
+			board.setTitle(title);
+			board.setSmallCategoryNo(Integer.parseInt(smallCategory));
+			board.setMemberNo(member.getMemberNo());
+			board.setContent(content);
+			board.setCloseDate(closeDate);
+			board.setStartDate(startDate);
+			board.setMemberCount(memberCount);
+			board.setPlace(place);
+			board.setPurpose(purpose);
+			board.setPeriod(period);
+			board.setFrequency(frequency);
 
 		dao.insertBoard(board);
 
 		return "redirect:/board/list.action";
 	}*/
+
+	public void processBoard(MultipartHttpServletRequest req, Board board, int memberNo) {
+		//1. 파일 get
+		String path = req.getRealPath("/resources/boardimage");//실제 파일을 저장할 경로
+		MultipartFile file = req.getFile("boardimage`");
+		ArrayList<BoardFile> files = new ArrayList<>();
+
+		try {
+			//2. MemberNo, boardNo(모임no)구하기
+			BoardMember boardMember = new BoardMember();
+			int newBoardNo = boardService.insertBoard(board);	// upload image: insert하고 return으로 int 받음
+			boardMember.setMemberNo(memberNo);
+			boardMember.setBoardNo(newBoardNo);
+
+			//3. memeber 모임에 파일 등록
+			memberService.insertBoardMemberByBoardNoAndMemberNo(boardMember); // newBoardNo, memberNo 들어있음
+			if (file != null && file.getSize() > 0) {							//3.1 파일 not null -> 파일 naming
+				String fileName = file.getOriginalFilename();
+
+			// 4. file naming
+				if (fileName.contains("\\")) {									//4.0 파일 naming condition
+					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+				}
+				String uniqueFileName = newBoardNo + ".jpg";					//4.1 파일 naming unique
+
+			//5. file 전송
+				file.transferTo(new File(path, uniqueFileName));
+				BoardFile b = new BoardFile();
+						  b.setSavedFileName(uniqueFileName);
+						  b.setUserFileName(fileName);
+				files.add(b);
+			}
+
+			for (BoardFile b : files) {
+				b.setBoardNo(newBoardNo);
+				boardService.registerBoardFile(b);			//UploadFile insert
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+
 	@RequestMapping(value = "write.action", method = RequestMethod.POST)
-		public ModelAndView Board(MultipartHttpServletRequest req, HttpSession session, Board board) {
-			
+	public ModelAndView Board(
+				MultipartHttpServletRequest multiReq, HttpSession session, Board board) {
 			ModelAndView mav = new ModelAndView();
+			//1. loginuser 구하기
 			Member member = (Member) session.getAttribute("loginuser");
-			
-			processBoard(req, board, member.getMemberNo());
-			
-			
+			//2. 위에 만든 method로 모임 보드에 파일 등록
+			processBoard(multiReq, board, member.getMemberNo());
+			//3.mav 주소 선정, 패키지는?
 			mav.setViewName("redirect:/board/list.action");
-			
 			return mav;
 		}
 
-	public void processBoard(MultipartHttpServletRequest req, Board board, int memberNo) {		
-		
-		String path = req.getRealPath("/resources/boardimage");//실제 파일을 저장할 경로
-		try {
-			ArrayList<BoardFile> files = new ArrayList<>();
-
-			MultipartFile file = req.getFile("boardimage");
-			int newBoardNo = boardService.insertBoard(board);//Upload insert
-			BoardMember boardMember = new BoardMember();
-			boardMember.setBoardNo(newBoardNo);
-			boardMember.setMemberNo(memberNo);
-			memberService.insertBoardMemberByBoardNoMemberNo(boardMember);
-			if (file != null && file.getSize() > 0) {
-			
-				String fileName = file.getOriginalFilename();
-				if (fileName.contains("\\")) {
-					fileName = fileName.substring(
-						fileName.lastIndexOf("\\") + 1);
-				}
-				
-				String uniqueFileName = newBoardNo + ".jpg";
-
-				file.transferTo(new File(path, uniqueFileName));
-							
-				BoardFile b = new BoardFile();						
-				b.setSavedFileName(uniqueFileName);
-				b.setUserFileName(fileName);
-				files.add(b);
-			}
-			
-			//int newBoardNo = boardService.insertBoard(board);//Upload insert
-			
-			for (BoardFile uf : files) {
-				uf.setBoardNo(newBoardNo);
-				boardService.registerBoardFile(uf);//UploadFile insert
-			}
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();	
-		}
-	}	
 	
 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
 	public String list(Model model) {
-		
 
-		List<Board> boards = dao.selectBoardList();
+		List<Board> boards = boardService.selectBoardList();
 		ArrayList<Member> members = new ArrayList<>();
 		ArrayList<SmallCategory> smallCategory = new ArrayList<>();
 
+		// 1. member, sC구하기
 		for (Board b : boards) {
-			Member member;// = new Member();
-			member = memberService.getMemberByMemberNo(b.getMemberNo());
-			SmallCategory category;
-			category = smallCategoryService.selectSmallCategoryNameBySmallCategoryNo(b.getSmallCategoryNo());
+			Member member = memberService.getMemberByMemberNo(b.getMemberNo());
+			SmallCategory category =
+							smallCategoryService.selectSmallCNameBySmallCNo(b.getSmallCategoryNo());
+		//2. member, sc에 구한값 add하기
 			members.add(member);
+			smallCategory.add(category);
 		}
-		
+
+		//3. model에 전달
 		model.addAttribute("boards", boards);
 		model.addAttribute("members", members);
 		model.addAttribute("smallCategory", smallCategory);
 		return "board/list";
 	}
-	
-	/* 여기는 인덱스에서 선택한 카테고리를 보여줍니다!! 2016-06-17 */
+
+
+	/* 여기는 인덱스에서 선택한 카테고리를 보여줍니다!! */
 	@RequestMapping(value = "list2.action", method = RequestMethod.GET)
 	public String list2(Model model, int bigCategory) {
 
-		List<Board> boards = dao.selectBoardList();
+		List<Board> boards = boardService.selectBoardList();
 		ArrayList<Member> members = new ArrayList<>();
 		ArrayList<SmallCategory> smallCategory = new ArrayList<>();
 
+		//1. 해당 보드의 멤버구하기 (ArrayList로.. 멤버 여러명임)
 		for (Board b : boards) {
-			Member member;// = new Member();
-			member = memberService.getMemberByMemberNo(b.getMemberNo());
-			SmallCategory category;
-			category = smallCategoryService.selectSmallCategoryNameBySmallCategoryNo(b.getSmallCategoryNo());
+			Member member = memberService.getMemberByMemberNo(b.getMemberNo());
 			members.add(member);
 		}
+
+		//2. model에 memberinfo 전달
 		model.addAttribute("bigCategory", bigCategory);
 		model.addAttribute("boards", boards);
 		model.addAttribute("members", members);
@@ -238,23 +216,20 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		return "board/list";
 	}
 
+
 	@RequestMapping(value = "listbycategory.action", method = RequestMethod.GET)
 	public String listByCategory(Model model) {
 
-		List<Board> boards = dao.selectBoardListBySmallCategoryNo();
-		ArrayList<Member> members = new ArrayList<>();
-		ArrayList<SmallCategory> smallCategory = new ArrayList<>();
+		List<Board> boards = boardService.selectBoardListBySmallCategoryNo();
+		ArrayList<SmallCategory> smallCategory = new ArrayList<>();		//model에 담을 sc 소포상자
 
+		//1. 해당 보드의 카테고리 구하기 (ArrayList로.. 멤버 여러명임)
 		for (Board b : boards) {
-			Member member;// = new Member();
-			member = memberService.getMemberByMemberNo(b.getMemberNo());
-			SmallCategory category;
-			category = smallCategoryService.selectSmallCategoryNameBySmallCategoryNo(b.getSmallCategoryNo());
-			members.add(member);
+			SmallCategory category = smallCategoryService.selectSmallCNameBySmallCNo(b.getSmallCategoryNo());
+			smallCategory.add(category); // arraylist에 카테고리 담기
 		}
 
 		model.addAttribute("boards", boards);
-		model.addAttribute("members", members);
 		model.addAttribute("smallCategory", smallCategory);
 		return "board/listbycategory";
 	}
@@ -263,115 +238,105 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 
 	@RequestMapping(value = "detail.action", method = RequestMethod.GET)
 	public ModelAndView showBoardByBoardNo(HttpServletRequest request, HttpSession session) {
-
 		ModelAndView mav = new ModelAndView();
-		Member member = (Member)session.getAttribute("loginuser");
-		String boardNo = request.getParameter("boardno");
-		if (boardNo == null || boardNo.length() == 0) {
-			mav.setViewName("redirect:/board/list.action");
-			return mav;
-		}
-		int no = Integer.parseInt(boardNo);
 
-		// 데이터베이스에서 데이터 조회
-		Board board = dao.selectBoardByBoardNo(no);
-		if (board == null) {
-			mav.setViewName("redirect:/board/list.action");
-			return mav;
-		}
-		
-		List<BoardMember> boardMembers = memberService.selectBoardMemberByBoardNo(board.getBoardNo());
-		if(boardMembers != null){
-			for(BoardMember boardMember : boardMembers){
-				if(boardMember == null || boardMember.getMemberNo() == member.getMemberNo()){
-					mav.addObject("swich", "full");
+		// 1. boardNo 구하기(request)
+		String boardNo = request.getParameter("boardno"); 			// boardNo
+		int pBoardNo = Integer.parseInt(boardNo); 						// parsing
+
+			if (boardNo == null || boardNo.length() == 0) {				// 1.0 boardNo null,
+				mav.setViewName("redirect:/board/list.action");			//return list.action
+				return mav;
+			}else {														// 1.1 boardNo not null
+		// 2 Board 구하기(boardService)
+				Board board = boardService.selectBoardByBoardNo(pBoardNo);
+				if (board == null) {                                     //2.0 if (selected) board null
+					mav.setViewName("redirect:/board/list.action");      //return list.action
+					return mav;
 				}
+		//3. 해당 Board에 속한 멤버 구하기
+				Member member = (Member)session.getAttribute("loginuser"); 	// 현재 유저의
+				// 해당 모임에 속한 멤버를(list<BoardMember>로 받음) 모임 구하기(BoardNo로 묶어놓음)
+				List<BoardMember> boardMembers = memberService.selectBoardMemberByBoardNo(board.getBoardNo());
+
+				if(boardMembers != null){										//3.1 Board에 가입한 멤버들 있으면
+					for(BoardMember boardMember : boardMembers){
+						if(boardMember.getMemberNo() == member.getMemberNo()){ // 3.1.1 현재 로그인 멤버가 보드의 멤버면
+							mav.addObject("swich", "full");
+						}
+					}
+				}
+
+		// 4. 이 보드의 회원 수 구하기
+				int memberCount = memberService.selectBoardMemberCountByBoardNo(board.getBoardNo());
+
+				// 5. 조회된 데이터를 jsp 처리하도록 mav에 저장
+				mav.addObject("board", board);
+				mav.addObject("membercount", memberCount);
+				mav.setViewName("board/detail2");
+				return mav;
 			}
-		}
-		int memberCount = memberService.selectBoardMemberCountByBoardNo(board.getBoardNo());
-		
-		// SmallCategory smallCategory =
-		// dao.selectSmallCategoryByBoardNo(board.getSmallCategoryNo());
-
-		// Member member = dao2.getMemberByMemberNo(board.getMemberNo());
-
-		// 조회된 데이터를 jsp 처리할 수 있도록 request 객체에 저장
-		mav.setViewName("board/detail2");
-		mav.addObject("board", board);
-		mav.addObject("membercount", memberCount);
-		// mav.addObject("smallCategory", smallCategory);
-		// mav.addObject("member", member);
-
-		return mav;
-
 	}
 
 	@RequestMapping(value = "edit.action", method = RequestMethod.GET)
 	public ModelAndView showBoardEditForm(HttpServletRequest request) {
-
 		ModelAndView mav = new ModelAndView();
 
+		//1. 보드넘버 구하기
 		String boardNo = request.getParameter("boardno");
-		if (boardNo == null || boardNo.length() == 0) {
+		int pBoardNo = Integer.parseInt(boardNo); 				// parsing
+
+		if (boardNo == null || boardNo.length() == 0) {			//1.0 보드넘버 null
 			mav.setViewName("redirect:/board/list.action");
 			return mav;
+
+		}else {													//1.1 보드넘버 not null
+		//2. 보드 구하기
+			Board board = boardService.selectBoardByBoardNo2(pBoardNo);
+			if (board == null) {								//2.0 보드 null
+				mav.setViewName("redirect:/board/list.action"); // return list.action
+				return mav;
+			}else {												//2.1 보드 not null
+																// mav.addObject(),.setViewName()
+				mav.addObject("board", board);
+				mav.setViewName("board/editform");
+				return mav;
+			}
 		}
-		
-		Board board = dao.selectBoardByBoardNo2(Integer.parseInt(boardNo));
-
-		if (board == null) {
-			mav.setViewName("redirect:/board/list.action");
-			return mav;
-		}
-
-		/*
-		 * String pageNo = "1"; if (request.getParameter("pageno") != null) {
-		 * pageNo = request.getParameter("pageno"); }
-		 */
-
-		mav.addObject("board", board);
-		mav.setViewName("board/editform");
-		return mav;
 	}
 
 	@RequestMapping(value = "delete.action", method = RequestMethod.GET)
 	public String deleteBoard(@RequestParam("boardno") int boardNo) {
-
-		// //1. 요청 데이터 읽기 (글번호)
-		// String boardNo = req.getParameter("boardno");
-		// if (boardNo == null || boardNo.length() == 0) {
-		// return "redirect:/board/list.action";
-		// }
-
-		// 2. 데이터 처리 (db에서 데이터 변경)
-		boardService.deleteBoard(boardNo);
+		// request로 <form>에서 현재 보드 페이지 파라미터로 받아옴 -> 따로 boardNo읽을 필요 없음
+		// 1. 데이터 처리 (db에서 데이터)
 		Board board = boardService.selectBoardByBoardNo(boardNo);
-		Date dDate = java.sql.Date.valueOf("2016-05-22");
+		Date dDate = java.sql.Date.valueOf("2016-05-22"); 			// java.util이 아닌 sql
 		board.setCloseDate(dDate);
 
 		// 3. 목록으로 이동
 		return "redirect:/board/list.action";
 	}
-	
+
+
+
 	@RequestMapping(value = "enjoy.action", method = RequestMethod.GET)
 	@ResponseBody
 	public String enjoy(HttpSession session, HttpServletRequest request, int boardno) {
 
+		//1. loginuser와 해당 모임의 멤버 구하기
 		Member member = (Member)session.getAttribute("loginuser");
-		String html="";
+		//String boardNoS = request.getParameter("boardno");
+
 		BoardMember boardMember = new BoardMember();
-		
-		boardMember.setMemberNo(member.getMemberNo());
-//		String boardNoS = request.getParameter("boardno");
+					boardMember.setMemberNo(member.getMemberNo());
 		boardMember.setBoardNo(boardno);
-		//참가로직
-		memberService.insertBoardMemberByBoardNoMemberNo(boardMember);
+
+		// 2. 모임에 참가
+		memberService.insertBoardMemberByBoardNoAndMemberNo(boardMember);
+		// 3. 모임 참가 인원수 +1
 		int count = memberService.selectBoardMemberCountByBoardNo(boardno);
-		
-		html = String.valueOf(count);
-		
+
+		String html= String.valueOf(count);
 		return html;
 	}
-
-
 }

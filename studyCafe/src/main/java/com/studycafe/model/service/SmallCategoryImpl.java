@@ -15,7 +15,7 @@ public class SmallCategoryImpl implements SmallCategoryService {
 	private SmallCategoryDao smallCategoryDao;
 
 	@Override
-	public SmallCategory selectSmallCategoryNameBySmallCategoryNo(int smallCategoryNo) {
+	public SmallCategory selectSmallCNameBySmallCNo(int smallCategoryNo) {
 		return smallCategoryDao.getSmallCategoryNameBySmallCategoryNo(smallCategoryNo);
 	}
 

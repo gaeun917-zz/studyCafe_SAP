@@ -18,7 +18,8 @@ public interface MemberMapper {
 	Member selectMemberByMemberNo(int memberNo);
 	void changePassword(Member member);
 	void deleteByMemberNo(int memberNo);
-	
+
+	//board 관련
 	void insertBoardMemberByBoardNoMemberNo(BoardMember boardMember);
 	List<BoardMember> selectBoardMemberByBoardNo(int boardNo);
 	int selectBoardMemberCountByBoardNo(int boardNo);

@@ -17,6 +17,8 @@ public class BoardServiceImpl implements BoardService {
     @Qualifier("oracleBoardDao")
     private BoardDao boardDao;
 
+
+
     @Override
     public int insertBoard(Board board) {
         return boardDao.insertBoard(board);
@@ -24,13 +26,11 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void registerBoardFile(BoardFile boardFile) {
-        // TODO Auto-generated method stub
-        boardDao.insertBoardFile(boardFile);
+                boardDao.insertBoardFile(boardFile);
     }
 
     @Override
     public List<Board> selectBoardList() {
-
         return boardDao.selectBoardList();
     }
 
@@ -39,6 +39,10 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.selectBoardByBoardNo(boardNo);
     }
 
+    @Override
+    public Board selectBoardByBoardNo2(int boardNo) {
+        return boardDao.selectBoardByBoardNo2(boardNo);
+    }
 
     public Board selectByCategory(int smallCategoryNo) {
         return boardDao.selectByCategory(smallCategoryNo);
@@ -49,19 +53,15 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.selectSmallCategoryByBoardNo(sCNo);
     }
 
-    @Override
-    public Board selectBoardByBoardNo2(int boardNo) {
-        return boardDao.selectBoardByBoardNo2(boardNo);
-    }
+
 
     @Override
     public void deleteBoard(int boardNo) {
-        boardDao.deleteBoard(boardNo);
+                boardDao.deleteBoard(boardNo);
     }
 
     @Override
     public List<Board> selectBoardListBySmallCategoryNo() {
-
         return boardDao.selectBoardListBySmallCategoryNo();
     }
 

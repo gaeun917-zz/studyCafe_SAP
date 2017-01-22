@@ -74,14 +74,12 @@ public class OracleMemberDao implements MemberDao {
 
 	public void changePassword(Member member) {
 		memberMapper.changePassword(member);
-		
 	}
 
 
 	@Override
 	public void deleteByMemberNo(int memberNo) {
 		memberMapper.deleteByMemberNo(memberNo);
-		
 	}
 
 	@Override
