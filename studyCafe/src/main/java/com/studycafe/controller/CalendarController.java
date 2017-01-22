@@ -44,7 +44,6 @@ public class CalendarController{
 	//1. 일정 달력에 전부 보여주기
 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
 	public ModelAndView list(Model model, HttpSession session, int memberpageno) {
-		ModelAndView mav = new ModelAndView();
 
 		//1. loginuser로부터 pageNo, pageMenu, pageMenuByPageNotice, CalendarList 구하기
 		Member member = (Member) session.getAttribute("loginuser");
@@ -76,6 +75,7 @@ public class CalendarController{
 		json += "]"; // JSON END
 
 		//3. mav에 add&set
+		ModelAndView mav = new ModelAndView("calendar/list");
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("pages", pages);
 		mav.addObject("calendars", calendars);
@@ -83,26 +83,25 @@ public class CalendarController{
 		mav.addObject("memberpageno", memberpageno);
 		mav.addObject("noticemenu", noticeMenu);
 
-		mav.setViewName("calendar/list");
 		return mav;
 	}
+
 
 
 	//2. 일정 작성 폼
 	@RequestMapping(value = "writeform.action", method = RequestMethod.GET)
 	public ModelAndView getScheduleWriteForm(int memberpageno) {
-		ModelAndView mav = new ModelAndView();
 
 		// 1. pageMenu, pageMenuByPageNotice 구하기
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
 
 		//2. mav add&set
+		ModelAndView mav = new ModelAndView("calendar/writeform");
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("memberpageno", memberpageno);
 		mav.addObject("noticemenu", noticeMenu);
 
-		mav.setViewName("calendar/writeform");
 		return mav;
 	}
 
@@ -110,7 +109,6 @@ public class CalendarController{
 	//3. 일정 등록하기
 	@RequestMapping(value = "write.action", method = RequestMethod.POST)
 	public ModelAndView calendar(Calendar calendar, int memberpageno) {
-		ModelAndView mav = new ModelAndView();
 
 		// 1. pageMenu, pageMenuByPageNotice구하기
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
@@ -120,12 +118,12 @@ public class CalendarController{
 		calendar.setPageNo(memberpageno);
 		calendarService.registerCalendar(calendar);
 
-		//3. mav add&set
+		//3. mav setView&addObject
+		ModelAndView mav = new ModelAndView("redirect:/calendar/list.action");
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("memberpageno", memberpageno);
 		mav.addObject("noticemenu", noticeMenu);
 
-		mav.setViewName("redirect:/calendar/list.action");
 		return mav;
 	}
 
@@ -133,7 +131,6 @@ public class CalendarController{
 	//4.일정 클릭 시 상세 보여주기
 	@RequestMapping(value = "view.action", method = RequestMethod.GET)
 	public ModelAndView view(@RequestParam("calendarno")int calendarNo, int memberpageno) {
-		ModelAndView mav = new ModelAndView();
 
 		//1. pageMenu, noticeMenu 구하기
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
@@ -149,6 +146,8 @@ public class CalendarController{
 		String dueDate2 = format.format(calendar.getDueDate());
 
 		//3.mav add & set
+		ModelAndView mav = new ModelAndView("calendar/view");
+
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("noticemenu", noticeMenu);
 		mav.addObject("calendar", calendar);
@@ -157,7 +156,6 @@ public class CalendarController{
 		mav.addObject("startDate2", startDate2);
 		mav.addObject("dueDate2", dueDate2);
 
-		mav.setViewName("calendar/view");
 		return mav;
 	}
 

@@ -23,44 +23,46 @@ import com.studycafe.model.dto.Member;
 import com.studycafe.common.Util;
 
 @Controller //request 처리하고 view로 toss해 줌
-@RequestMapping(value = "/member/") //value url로 접속해서 들어오는 요청 받는 주소. 즉, 내 주소  
+@RequestMapping(value = "/member/") //(value= url)로 접속해서 들어오는 client 요청을 받는 주소. 즉, 내 주소
 public class MemberController {
-
-
-
 
 	@Autowired
 	@Qualifier("memberService")
 	private MemberService memberService;
 
 
-
-	// jsp에서 <form action= list.action> 걸어놓은 곳으로 이동. value에 .jsp 주소만 주기도 하지만,
-	// action으로 정확히 어디에 적용되는지 명시! !!!!
+	// jsp에서 <form action= list.action> 걸어놓은 곳에서 데이터 받아옴 from.
+	// (value=url)에 .jsp 주소만 주기도 하지만, action으로 정확히 어디에 적용되는지 명시! !!!!
 	@RequestMapping(value = "list.action", method = RequestMethod.GET) // method = default:POST
 	public String list(Model model) {
-		// Model이는 우체부 request씨한테서 From (list.action) <form> 이보낸 데이터를 GET
-		// dao에서 받아온 데이터를 addAttribute(id, value)하고, id name tag의 소포를
-		// return(To) jsp 주소로 내용을 보내달라고 함
-		// jsp는 이 소포를 받음: Model이가 정한 id로 Attribute한 내용 꺼내씀: ${ members }
+
+		// 1. Model이는 우체부 request씨한테서 From (list.action) <form> 이 보낸 데이터를 GET
+		// 2.  memerService(dao)로 데이터 처리
+		// 3. .addAttribute(id, value)함: nametag(id)에 데이터 처리된 애를 담아서,
+		// 4. return(To) jsp 주소로 내용을 보내달라고 함
+		// * jsp는 이 소포를 받음: Model이가 정한 id로 .addAttribute한 내용 꺼내씀: ${ members }
 		
-		//1. 데이터 조회 (dao 사용)
+		//1. 데이터 조회 (memberServiceZ(interface)에는 dao와 같은 method list
+		// -> implement한 애들은 Mapper와 연결해줌)
 		List<Member> members = memberService.getList(); //dao는 mapper 연결해줌
 		
+		// 데이터 처리가 잘되었는지, memebrs list의 (indxe:0)를 열어보자
+		//Member member = members.get(0);
+		//System.out.println(member.getMemberId());
+
 		//2. 데이터 저장 (jsp에서 사용할 수 있도록)
-		Member member = members.get(0);
-		System.out.println(member.getMemberId());//dao가 잘 작동하는지 확인
 		model.addAttribute("members", members);// id:"members" value: members
 
 		//3. 뷰 반환
 		return "member/list"; // View 보내줄 곳 주소: list.jsp 
 	}
 	
-// ModelAndView를 사용하면 ~
+// ModelAndView 사용법
 // 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
-//	public ModelAndView list() { // return data type이 ModelAndView가 됨
-//		//1. 데이터 조회
-//		List<Member> members = dao.getList();
+//	public ModelAndView list() { // return type이 ModelAndView!
+//
+// 		1. 데이터 조회
+//		List<Member> members = dao.getList();// Member를 return하는 .getList()의 리스트에 모든 내용을 담음
 //		
 //		//2. 데이터 저장 (jsp에서 사용할 수 있도록)
 //		ModelAndView mav = new ModelAndView("member/list"); // mav 객체 만들면서 return 주소부터 줌

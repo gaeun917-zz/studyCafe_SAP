@@ -30,7 +30,6 @@ public class HomeController {
 	//		return "index"; // /WEB-INF/views/ + index + .jsp
 	//	}
 
-
 	@Autowired
 	@Qualifier("pageService")
 	private PageService pageService;
