@@ -139,66 +139,59 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 
 
 	@RequestMapping(value = "/board/detail.action", method = RequestMethod.GET)
-	public ModelAndView showPageBoardByBoardNo(HttpServletRequest request, int menuno, int memberpageno, HttpSession session) {
+	public ModelAndView showPageBoardByBoardNo(HttpServletRequest request,
+											   int menuno, int memberpageno) {
 		ModelAndView mav = new ModelAndView();
 
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
 		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
 
-
-
-
 		// 1.request에서 boardNo 구하기
 		String boardNo = request.getParameter("boardno");
-		int no = Integer.parseInt(boardNo);
-
-		if (boardNo == null || boardNo.length() == 0) {			//1.0 boardNo null
-			mav.setViewName("redirect:/page/board/list.action");//목록으로
+		int pBoardNo = Integer.parseInt(boardNo);
+		if (boardNo == null || boardNo.length() == 0) {				//1.0 boardNo null
+			mav.setViewName("redirect:/page/board/list.action");	//목록으로
 			return mav;
 		}
 
-		// 2. db에서 pageBoard 구하기
-		PageBoard board = pageBoardService.getPageBoardByBoardNo(no);
-
-		if (board == null) {									//2.0 조회 data null
-			mav.setViewName("redirect:/page/board/list.action");//목록으로
+		// 2. (page)Board 구하기
+		PageBoard board = pageBoardService.getPageBoardByBoardNo(pBoardNo);
+		if (board == null) {										//2.0 조회 data null
+			mav.setViewName("redirect:/page/board/list.action");	//목록으로
 			return mav;
 		}
 
-		//3. board의 member#로 member 구하기
+		//3. (board의 member#로) member 구하기
 		Member member = memberService.getMemberByMemberNo(board.getMemberNo());
 
+		// 4. pageNo구하기
 		String pageNo = "1";
 		if (request.getParameter("pageno") != null) {			//3.1 member
 			pageNo = request.getParameter("pageno");
 		}
 
-		// 조회된 데이터를 jsp 처리할 수 있도록 request 객체에 저장
 		mav.setViewName("page/board/detail");
-		mav.addObject("board", board);
-		mav.addObject("pageno", pageNo);
-		mav.addObject("member", member);
 		mav.addObject("pagemenus", pageMenu);
-		mav.addObject("memberpageno", memberpageno);
 		mav.addObject("noticemenu", noticeMenu);
 		mav.addObject("menu", menu);
+		mav.addObject("board", board);
+		mav.addObject("member", member);
+		mav.addObject("pageno", pageNo);
+		mav.addObject("memberpageno", memberpageno);
 
 		return mav;
 
 	}
 	
 	@RequestMapping(value = "/board/writeform.action", method = RequestMethod.GET)
-	public ModelAndView getWriteForm(int menuno, HttpSession session, int memberpageno) {
-		ModelAndView mav = new ModelAndView();
-		Member member = (Member) session.getAttribute("loginuser");
-		
-		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
+	public ModelAndView getWriteForm(int menuno, int memberpageno) {
 
+		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
-		
-		mav.setViewName("page/board/writeform");
+
+		ModelAndView mav = new ModelAndView("page/board/writeform");
 		mav.addObject("menu", menu);
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("memberpageno", memberpageno);
@@ -208,54 +201,59 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 
 	@RequestMapping(value = "/board/writeform.action", method = RequestMethod.POST)
 	public ModelAndView setWriteForm(HttpServletRequest req, HttpSession session, int memberpageno) {
-		// 1. 브라우저에 사용자가 입력한 데이터를 읽어서 변수에 저장 (요청 정보에서 데이터 읽기)
-		ModelAndView mav = new ModelAndView();
 
-		Member member = (Member) req.getSession().getAttribute("loginuser");
+		Member member = (Member) session.getAttribute("loginuser");
 
-		List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
-		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
-		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
-		
+		// 1. req로 <form>의 input을 가져오기
 		String title = req.getParameter("title");
 		String content = req.getParameter("content");
 		String menuno = req.getParameter("menuno");
+		int pMenuNo = Integer.parseInt(menuno);
 
+		//2. pageBoard에 set
 		PageBoard board = new PageBoard();
-		board.setTitle(title);
-		board.setContent(content);
-		board.setMemberNo(member.getMemberNo());
-		board.setMenuNo(Integer.parseInt(menuno));
-		pageBoardService.insertPageBoard(board);
-		// dao.insertBoard(board);
+				  board.setTitle(title);
+				  board.setContent(content);
+		          board.setMenuNo(pMenuNo);
+		          board.setMemberNo(member.getMemberNo());
 
-		mav.setViewName("redirect:/page/board/list.action?menuno=" + menuno);
+		//3. DB에 pageBoard insert
+		pageBoardService.insertPageBoard(board); // db insert: return 값없어도됨, 실행하고 끝
+
+		//4. DB에서 pagemenu, noticemenu 가져오기
+		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
+		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
+
+		//5. mav
+		ModelAndView mav = new ModelAndView("redirect:/page/board/list.action?menuno=" + menuno);
 		mav.addObject("pagemenus", pageMenu);
-		mav.addObject("memberpageno", memberpageno);
+		mav.addObject("memberpageno", memberpageno); // parameter로 받음
 		mav.addObject("noticemenu", noticeMenu);
 
 		return mav;
-		// return "redirect:/page/board/list.action?menuno=" + menuno;
 	}
+
 
 	@RequestMapping(value = "/board/search.action", method = RequestMethod.GET)
 	public ModelAndView search(HttpSession session, HttpServletRequest req, int pageno, int memberpageno) {
-		// 1. 브라우저에 사용자가 입력한 데이터를 읽어서 변수에 저장 (요청 정보에서 데이터 읽기)
-		ModelAndView mav = new ModelAndView();
+
 		String search = req.getParameter("search");
-		String menunoS = req.getParameter("menuno");
-		// List<PageBoard> boards =
-		// pageBoardService.getAllPageBoardsBySearch(search);
-		int menuno = Integer.parseInt(menunoS);
-		Member member = (Member)session.getAttribute("loginuser");
-		
-		PageMenu menu = pageService.selectMemberPageByMenuNo((menuno));
-		ArrayList<Member> members = new ArrayList<>();
+		String menuno1 = req.getParameter("menuno");
+		int menuno = Integer.parseInt(menuno1);
 		int currentPage = 1;
 		int pageSize = 10;
-		int dataCount = 0;
-		int pagerSize = 5;
-		String url = "list.action?menu=" + menu;
+		int startRow = (currentPage - 1) * pageSize + 1;
+
+		// 1. boards 구하기
+		List<PageBoard> boards = pageBoardService.getBoardList2(startRow, startRow + pageSize, menuno, search);
+
+
+		// List<PageBoard> boards =
+		// pageBoardService.getAllPageBoardsBySearch(search);
+		// Member member = (Member)session.getAttribute("loginuser");
+//		int dataCount = 0;
+//		int pagerSize = 5;
+//		String url = "list.action?menu=" + menu;
 
 		String queryString = req.getQueryString();
 
@@ -268,94 +266,97 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 			queryString = queryString.replace("&&", "&");
 			queryString += "&myp=test";
 		}
-		int startRow = (currentPage - 1) * pageSize + 1;
-		// 데이터베이스에서 데이터 조회
-		List<PageBoard> boards = pageBoardService.getBoardList2(startRow, startRow + pageSize, menuno, search);
+
+
+
+		// 2. members 구하기
+		ArrayList<Member> members = new ArrayList<>();
 		if (boards != null) {
 			for (PageBoard b : boards) {
-				Member m = new Member();
-				m = memberService.getMemberByMemberNo(b.getMemberNo());
+				Member m = memberService.getMemberByMemberNo(b.getMemberNo());
 				members.add(m);
 			}
 		}
 		
-		dataCount = pageBoardService.getBoardCount(menuno);
-		pagerSize = dataCount/pageSize;
+		//3. pageMenu 구하기
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
+		//4. menu 구하기
+		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
+		//5. noticeMenu 구하기
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
-		
 
-		mav.setViewName("page/board/list");
-		mav.addObject("members", members);
-		mav.addObject("boards", boards);
-		mav.addObject("pagemenus", pageMenu);
-		mav.addObject("menu", menu);
-		mav.addObject("noticemenu", noticeMenu);
-		mav.addObject("memberpageno", memberpageno);
+		ModelAndView mav = new ModelAndView("page/board/list");
+		             mav.addObject("boards", boards);
+					 mav.addObject("members", members);
+					 mav.addObject("pagemenus", pageMenu);
+					 mav.addObject("menu", menu);
+					 mav.addObject("noticemenu", noticeMenu);
+					 mav.addObject("memberpageno", memberpageno);
 
 		return mav;
 	}
 
+
 	@RequestMapping(value = "/board/delete.action", method = RequestMethod.GET)
 	public String delete(int boardno, int menuno, int memberpageno) {
-
 		pageBoardService.deleteBoard(boardno);
-
-		return "redirect:/page/board/list.action?menuno=" + menuno + "&memberpageno=" + memberpageno;
+		return "redirect:/page/board/list.action?" +
+				"menuno=" + menuno +
+				"&memberpageno=" + memberpageno;
 	}
+
 
 	@RequestMapping(value = "/image.action", method = RequestMethod.POST)
 	public ModelAndView image(MultipartHttpServletRequest req, HttpSession session, int memberpageno, int menuno) {
 
-		ModelAndView mav = new ModelAndView();
 		Member member = (Member) session.getAttribute("loginuser");
 
-		List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
+		List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
 		
-		processImage(req, memberpageno);
+		processImage(req, memberpageno);// 아래에 method()
 
-		mav.setViewName("redirect:/page/board/list.action?menuno=" + menuno + "&pageno=1");
+		ModelAndView mav = new ModelAndView("redirect:/page/board/list.action?menuno=" + menuno + "&pageno=1");
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("pages", pages);
-		mav.addObject("memberpageno", memberpageno);
 		mav.addObject("noticemenu", noticeMenu);
+		mav.addObject("memberpageno", memberpageno);
 
 		return mav;
-		// return "redirect:/upload/list.action";
 	}
 
 	private void processImage(MultipartHttpServletRequest req, int memberpageno) {
 
-		String path = req.getRealPath("/resources/uploadimage");// 실제 파일을 저장할 경로
 		try {
+				ArrayList<PageImage> files = new ArrayList<>();
+				// 1. file 가져오기
+				MultipartFile file = req.getFile("image");
 
-			ArrayList<PageImage> files = new ArrayList<>();
-			
-			MultipartFile file = req.getFile("image");
-			if (file != null && file.getSize() > 0) {
+				// 2. file namimg
+				if (file != null && file.getSize() > 0) {
+					String fileName = file.getOriginalFilename();
 
-				String fileName = file.getOriginalFilename();
-				if (fileName.contains("\\")) {
-					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+					if (fileName.contains("\\")) {
+						fileName.substring(fileName.lastIndexOf("\\") + 1);
+					}else {
+
+						//3. 실제 파일을 저장할 경로, unique name
+						String path = req.getRealPath("/resources/uploadimage");
+						String uniqueFileName = memberpageno + ".jpg";
+						file.transferTo(new File(path, uniqueFileName));
+
+						PageImage p = new PageImage();
+								  p.setSavedFileName(uniqueFileName);
+								  p.setUserFileName(fileName);
+						files.add(p);
+					}
 				}
 
-				String uniqueFileName = memberpageno + ".jpg";
-
-				file.transferTo(new File(path, uniqueFileName));
-				
-				PageImage p = new PageImage();
-				p.setSavedFileName(uniqueFileName);
-				p.setUserFileName(fileName);
-				files.add(p);
-			}
-			
-			System.out.println(memberpageno);
-			for (PageImage pi : files) {
-				pi.setPageNo(memberpageno);
-				pageService.registerImageFile(pi);//UploadFile insert
-			}
+				for (PageImage pi : files) {
+						pi.setPageNo(memberpageno);
+						pageService.registerImageFile(pi);//UploadFile insert
+				}
 			
 		} catch (Exception ex) {
 			// tx:advice 설정으로 구현한 경우 사용
@@ -368,100 +369,18 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		}
 	}
 
+
 	@RequestMapping(value = "/board/plus.action", method = RequestMethod.GET)
 	public void plus(HttpServletRequest req, HttpServletResponse response, int memberpageno) throws IOException {
 
 		PrintWriter writer = response.getWriter();
 
 		PageMenu menu = new PageMenu();
-		menu.setName(req.getParameter("name"));
-		menu.setPageNo(memberpageno);
+				 menu.setName(req.getParameter("name"));
+				 menu.setPageNo(memberpageno);
 
 		int menuno = pageService.insertPageMenuByAjax(menu);
-
 		writer.print(menuno);
 	}
-
-	/*
-	 * @RequestMapping( value = "write.action", method = RequestMethod.POST)
-	 * public String setWrite( MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * //processUploadTx(req, upload); //processUploadTx2(req, upload);
-	 * 
-	 * //processUploadTx3(req, upload);
-	 * ((PageController)context.getBean(beanName)).pageImage(req, page);
-	 * 
-	 * return "redirect:/page/page.action"; }
-	 * 
-	 * 
-	 * private void pageImage(MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * String path = req.getRealPath("/WEB-INF/upload");//실제 파일을 저장할 경로 try {
-	 * ArrayList<PageImage> files = new ArrayList<>(); ||||||| .r59
-	 * 
-	 * 
-	 * 
-	 * /*@RequestMapping( value = "write.action", method = RequestMethod.POST)
-	 * public String setWrite( MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * //processUploadTx(req, upload); //processUploadTx2(req, upload);
-	 * 
-	 * //processUploadTx3(req, upload);
-	 * ((PageController)context.getBean(beanName)).pageImage(req, page);
-	 * 
-	 * return "redirect:/page/page.action"; }
-	 * 
-	 * 
-	 * private void pageImage(MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * String path = req.getRealPath("/WEB-INF/upload");//실제 파일을 저장할 경로 try {
-	 * ArrayList<PageImage> files = new ArrayList<>(); ======= >>>>>>> .r76
-	 * 
-	 * /*
-	 * 
-	 * @RequestMapping( value = "write.action", method = RequestMethod.POST)
-	 * public String setWrite( MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * //processUploadTx(req, upload); //processUploadTx2(req, upload);
-	 * 
-	 * //processUploadTx3(req, upload);
-	 * ((PageController)context.getBean(beanName)).pageImage(req, page);
-	 * 
-	 * return "redirect:/page/page.action"; }
-	 * 
-	 * 
-	 * private void pageImage(MultipartHttpServletRequest req, Page page) {
-	 * 
-	 * String path = req.getRealPath("/WEB-INF/upload");//실제 파일을 저장할 경로 try {
-	 * ArrayList<PageImage> files = new ArrayList<>();
-	 * 
-	 * MultipartFile file = req.getFile("attach"); if (file != null &&
-	 * file.getSize() > 0) {
-	 * 
-	 * String fileName = file.getOriginalFilename(); if
-	 * (fileName.contains("\\")) { fileName = fileName.substring(
-	 * fileName.lastIndexOf("\\") + 1); }
-	 * 
-	 * String uniqueFileName = Util.getUniqueFileName(path, fileName);
-	 * 
-	 * file.transferTo(new File(path, uniqueFileName));
-	 * 
-	 * PageImage p = new PageImage(); p.setSavedFileName(uniqueFileName);
-	 * p.setUserFileName(fileName); files.add(p); }
-	 * 
-	 * String pageno = req.getParameter("pageno");//Upload insert
-	 * 
-	 * // int x = 10 / 0;
-	 * 
-	 * for (PageImage pi : files) { pi.setPageNo(Integer.parseInt(pageno));
-	 * pageService.insertImage(pi);//UploadFile insert }
-	 * 
-	 * } catch (Exception ex) { //tx:advice 설정으로 구현한 경우 사용 //
-	 * TransactionAspectSupport //
-	 * .currentTransactionStatus().setRollbackOnly();
-	 * 
-	 * ex.printStackTrace(); //직접 구현한 advice를 사용한 경우 사용 //throw new
-	 * RuntimeException(ex); } }
-	 */
 
 }
