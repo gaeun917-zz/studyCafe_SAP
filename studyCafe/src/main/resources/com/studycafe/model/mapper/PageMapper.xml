@@ -6,8 +6,7 @@
 	
 <mapper namespace="com.studycafe.model.mapper.PageMapper">
 
-	<!-- dto db -->
-		<resultMap type="Page" id="pageMap">
+	<resultMap type="Page" id="pageMap">
 		<id property="pageNo" column="page_no" />
 		<result property="image" column="image" />
 		<result property="startDate" column="startdate" />
@@ -27,62 +26,49 @@
 		<result property="status" column="status" />
 		<result property="pageNo" column="page_no" />
 	</resultMap>
-	
+
+	<sql id="selectDefault3">
+		SELECT menu_no, page_no, name
+		FROM page_menu
+	</sql>
+
 	<select id="selectPageNoByMemberNo" parameterType="int" resultMap="pageMap">
-		SELECT
-		page_no, name
+		SELECT page_no, name
 		FROM member_page
 		WHERE member_no = #{memberNo} AND status = '1'
 	</select>
 	
 	<select id="selectMemberPageByMenuNo" parameterType="int" resultMap="pageMenuMap">
-		SELECT
-		menu_no, page_no, name
-		FROM page_menu
+		<include refid="selectDefault3" />
 		WHERE menu_no = #{menuNo} AND (status = '1' OR status = '5')
 	</select>
 	
 	<select id="selectPageMenuByPageNoNotice" parameterType="int" resultMap="pageMenuMap">
-		SELECT
-		menu_no, page_no, name
-		FROM page_menu
+		<include refid="selectDefault3" />
 		WHERE page_no = #{pageNo} AND status = '5'
 	</select>
 	
 	<select id="selectPageMenuList" parameterType="int" resultMap="pageMenuMap">
-		SELECT
-		menu_no, name, status, page_no
+		SELECT menu_no, name, status, page_no
 		FROM page_menu
 		WHERE page_no = #{pageNo} AND status = '1'
 		ORDER BY page_no
 	</select>
 	
-	<insert id="insertPageMenuByAjax" parameterType="pageMenu"
-		useGeneratedKeys="true"
-		keyProperty="menuNo" keyColumn="menu_no">
-		INSERT INTO page_menu
-		(
-			menu_no
-			, name
-			, page_no
-		)
+	<insert id="insertPageMenuByAjax" parameterType="PageMenu"
+		useGeneratedKeys="true" keyProperty="menuNo" keyColumn="menu_no">
+		INSERT INTO page_menu (menu_no, name, page_no)
 		VALUES (page_menu_sequence.nextval, #{name}, #{pageNo})
 	</insert>
 	
 	<insert id="insertPageMenuNotice" parameterType="int">
-		INSERT INTO page_menu
-		(
-			menu_no
-			, name
-			, page_no
-			, status
-		)
+		INSERT INTO page_menu (menu_no, name, page_no, status)
 		VALUES (page_menu_sequence.nextval, '공지 사항', #{pageNo}, '5')
 	</insert>
 	
 	<insert id="insertImageFile" parameterType="PageImage">
-      INSERT INTO page_image (image_no, save_name, image_name, page_no)
-      VALUES (page_image_sequence.nextVal, #{savedFileName}, #{userFileName}, #{pageNo})
+      	INSERT INTO page_image (image_no, save_name, image_name, page_no)
+      	VALUES (page_image_sequence.nextVal, #{savedFileName}, #{userFileName}, #{pageNo})
    </insert>
    
    <select id="selectMemberPageCountByMemberNo" parameterType="int" resultType="int">
@@ -92,17 +78,17 @@
 	</select>
 	
 	<insert id="insertMemberPageByMemberNo" parameterType="hashMap">
-      INSERT INTO member_page (status, member_no, page_no, name)
-      VALUES ('1', #{memberNo}, #{pageNo}, #{name})
+      	INSERT INTO member_page (status, member_no, page_no, name)
+      	VALUES ('1', #{memberNo}, #{pageNo}, #{name})
    </insert>
    
-   <insert id="insertPage" parameterType="page">
-      INSERT INTO page (page_no, closedate, status)
-      VALUES (page_sequence.nextval, #{closeDate}, '1')
+   <insert id="insertPage" parameterType="Page">
+     	 INSERT INTO page (page_no, closedate, status)
+     	 VALUES (page_sequence.nextval, #{closeDate}, '1')
    </insert>
    
    <select id="selectPageNo" resultType="int">
-		SELECT page_sequence.currval FROM DUAL
+	 	 SELECT page_sequence.currval FROM DUAL
 	</select>
    
    <!-- <insert id="insertBoard" parameterType="Board">

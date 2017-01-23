@@ -34,13 +34,6 @@
 		FROM member
 	</sql>
 
-<!--value 에서는 위에 명시된 column명을 씀    -->
-	<!-- <insert id="insertMember" parameterType="Member" >
-		INSERT INTO member 
-		(member_No, memberId, name, password, confirmPasswd, email, regDate, gender )
-		VALUES
-		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name} #{passwd}, #{confirmPasswd}, #{email}, sysdate, #{gender});
-	</insert>  -->
 
 	<insert id="insertMember" parameterType="Member" >
 		INSERT INTO member (member_No, Id, name, password, email, gender, introduction )
@@ -104,7 +97,14 @@
 		FROM board_member
 		WHERE board_no = #{boardNo} AND status = '1'
 	</select>
-	
+
+	<!--value 에서는 위에 명시된 column명을 씀    -->
+	<!-- <insert id="insertMember" parameterType="Member" >
+		INSERT INTO member
+		(member_No, memberId, name, password, confirmPasswd, email, regDate, gender )
+		VALUES
+		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name} #{passwd}, #{confirmPasswd}, #{email}, sysdate, #{gender});
+	</insert>  -->
 </mapper>
   
 

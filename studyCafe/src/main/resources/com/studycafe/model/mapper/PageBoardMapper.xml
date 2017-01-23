@@ -58,7 +58,7 @@
 			  SELECT rownum idx, s.*
 			  FROM (
 			 	    SELECT pBoard_no, title, content, pboard_date, status,
-						 menu_no, member_no
+						   menu_no, member_no
  	  			    FROM page_board
 			        WHERE menu_no = #{menuno} AND status = '1' ) s
 		      )
@@ -88,7 +88,10 @@
 						FROM page_board
 						WHERE menu_no = #{menuno} ) s
 			)
-		WHERE idx >= #{start} AND idx <![CDATA[<]]> #{last} AND title like '%' || #{search} || '%' AND status = '1'
+		WHERE idx >= #{start}
+			  AND idx <![CDATA[<]]> #{last}
+			  AND title like '%' || #{search} || '%'
+			  AND status = '1'
 		
 	</select>
 	
