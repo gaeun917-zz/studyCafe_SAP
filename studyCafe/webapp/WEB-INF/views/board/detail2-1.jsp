@@ -14,12 +14,15 @@
     <link rel="Stylesheet" href="/studyCafe/resources/styles/input2.css"/>
 
     <script type="text/javascript">
+        //삭제 버튼
         function doDelete(boardNo) {
-            var yes = confirm(boardNo + '번 글을 삭제할까요?');
+            var yes = confirm(boardNo + '번 글을 삭제할까요?'); //true/false를 선택함
             if (yes) {
                 location.href = 'delete.action?boardno=' + boardNo;
+                // controller @requestMapping("delete.action")으로 가서 delete sql수행
             }
         }
+        //스터디 참여 버튼
         function register_Confirm() {
             $("#register").click(function () {
                 alert("참가신청 되었습니다!!");
@@ -35,28 +38,28 @@
         <div style="padding-top: 25px; text-align: center">
             <div id="inputcontent">
                 <div id="inputmain">
-                    <div class="inputsubtitle">게시판 글 내용</div>
+                    <div class="inputsubtitle">Board contents</div>
+
                     <table>
-                        <%-- 	<tr>
-                            <th>BOARD_NO</th>
-                            <td>${board.boardNo}</td>
-                        </tr> --%>
                         <tr>
                             <th>TITLE</th>
                             <td>${ board.title }</td>
                         </tr>
                         <tr>
-                            <th>개설자</th>
-                            <td><c:forEach var="member" items="${ board.memberId }">
-                                ${member.memberId}
-                            </c:forEach></td>
+                            <th>Founder</th>
+                            <td>
+                                <c:forEach var="member" items="${ board.memberId }">
+                                    ${member.memberId}
+                                </c:forEach>
+                            </td>
                         </tr>
                         <tr>
                             <th>Category</th>
-                            <td><c:forEach var="categoryBoard"
-                                           items="${ board.smallCategoryName }">
-                                ${categoryBoard.smallCategoryName}
-                            </c:forEach></td>
+                            <td>
+                                <c:forEach var="categoryBoard" items="${ board.smallCategoryName }">
+                                    ${categoryBoard.smallCategoryName}
+                                </c:forEach>
+                            </td>
                         </tr>
                         <tr>
                             <th>CLOSEDATE</th>
@@ -98,38 +101,36 @@
                             <th>CONTENT</th>
                             <td>${board.content}</td>
                         </tr>
-
                     </table>
+
                 </div>
             </div>
             <br/> <br/>
 
+
             <div class="buttons">
                 <c:choose>
-                    <c:when
-                            test="${ sessionScope.loginuser.memberNo eq board.memberNo }">
+                    <c:when test="${ sessionScope.loginuser.memberNo eq board.memberNo }">
                         <button type="button" value="삭제" class="btn btn-primary"
-                                onclick="location.href='javascript:doDelete(${ board.boardNo })'">
-                            모집 마감
+                                onclick="location.href='javascript:doDelete(${ board.boardNo })'">모집 마감
                         </button>
                         <button type="button" value="취소" class="btn btn-primary"
                                 onclick="location.href='list.action';">목록보기
                         </button>
                     </c:when>
-                    <c:otherwise>
 
+                    <c:otherwise>
                         <button id="register" type="button" value="스터디참여" class="btn btn-primary"
                                 onclick="alert('참여 신청되었습니다.');">스터디참여
                         </button>
                         <button type="button" value="취소" class="btn btn-primary"
                                 onclick="location.href='list.action';">목록보기
                         </button>
-
                     </c:otherwise>
                 </c:choose>
             </div>
+
         </div>
     </div>
-
 </body>
 </html>

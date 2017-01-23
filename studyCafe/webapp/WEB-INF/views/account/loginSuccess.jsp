@@ -1,12 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-
-<!--
+<!-- ----------------------------------------------------------------
 Below we include the Login Button social plugin.
 This button uses the JavaScript SDK to present a graphical Login button
 that triggers the FB.login() function when clicked.
--->
+-------------------------------------------------------------------- -->
 
 <!DOCTYPE html>
 <html>

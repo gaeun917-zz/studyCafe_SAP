@@ -1,4 +1,4 @@
-<%@page import="com.studycafe.model.dto.Member" %>
+<%@ page import="com.studycafe.model.dto.Member" %>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -38,7 +38,6 @@
     <div style="padding-top: 30px;">
         <div id="inputcontent">
             <div class="inputsubtitle">스터디 등록</div>
-
 
             <form action="write.action" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="memberNo"
@@ -278,10 +277,9 @@
             // document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
             try {
                 elClickedObj.form.submit();
-                /* var url = '/studyCafe/page/board/list.action?menuno=' +
-                ${menu.menuNo} + '&memberpageno=' +
-                ${memberpageno};
-                 $(location).attr('href', url); */
+                <%-- var url = '/studyCafe/page/board/list.action?menuno='
+                + ${menu.menuNo} + '&memberpageno=' +${memberpageno};
+                $(location).attr('href', url);--%>
             } catch (e) {
             }
         }
