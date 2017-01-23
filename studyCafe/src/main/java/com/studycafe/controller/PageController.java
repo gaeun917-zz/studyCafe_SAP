@@ -31,12 +31,6 @@ import java.util.List;
 @RequestMapping(value = "/page")
 public class PageController implements ApplicationContextAware, BeanNameAware {
 
-	// private MemberDao dao = new OracleMemberDao();
-	// @Autowired
-	// @Qualifier("oracleMemberDao")
-	// private MemberDao dao;
-	// public void setMemberDao(MemberDao memberDao) {
-	// this.dao = memberDao;
 
 	private ApplicationContext context;
 	private String beanName;
@@ -51,6 +45,9 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		this.context = arg0;
 	}
 
+
+
+
 	@Autowired
 	@Qualifier("pageBoardService")
 	private PageBoardService pageBoardService;
@@ -62,6 +59,7 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 	@Autowired
 	@Qualifier("memberService")
 	private MemberService memberService;
+
 
 	@RequestMapping(value = "/board/list.action", method = RequestMethod.GET)
 	public ModelAndView pageBoardList(int memberpageno ,int menuno, HttpServletRequest request, HttpSession session) {
