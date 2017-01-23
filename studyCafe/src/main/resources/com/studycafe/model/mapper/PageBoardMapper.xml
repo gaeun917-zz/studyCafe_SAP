@@ -5,9 +5,7 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 	
 <mapper namespace="com.studycafe.model.mapper.PageBoardMapper">
-	
-	<!-- dto db -->
-		<resultMap type="PageBoard" id="pageBoardMap">
+	<resultMap type="PageBoard" id="pageBoardMap">
 		<id property="PBoardNo" column="pBoard_no" />
 		<result property="title" column="title" />
 		<result property="content" column="content" />
@@ -16,149 +14,94 @@
 		<result property="menuNo" column="menu_no" />
 		<result property="memberNo" column="member_no" />
 	</resultMap>
-	
-	<!-- 이곳만 작업중! -->
-	<select id="selectPageBoardList"
-		parameterType="int"
-		resultMap="pageBoardMap">
-		SELECT 
-			pBoard_no, title, content,
-			pboard_date, status,
-			menu_no, member_no
+
+	<sql id="selectDefault2">
+		SELECT  pBoard_no, title, content, pboard_date, status,
+			    menu_no, member_no
 		FROM page_board
+	</sql>
+
+	<select id="selectPageBoardList" parameterType="int" resultMap="pageBoardMap">
+		<include refid="selectDefault2" />
 		WHERE menu_no = #{menuNo} AND status = '1'
 	</select>
 	
-	<select id="selectPageBoardNoticeList"
-		parameterType="int"
-		resultMap="pageBoardMap">
-		SELECT 
-			pBoard_no, title, content,
-			pboard_date, status,
-			menu_no, member_no
-		FROM page_board
+	<select id="selectPageBoardNoticeList" parameterType="int" resultMap="pageBoardMap">
+		<include refid="selectDefault2" />
 		WHERE menu_no = #{menuNo} AND status = '5'
 	</select>
 	
-	<select id="selectPageBoardListAdmin"
-		parameterType="int"
-		resultMap="pageBoardMap">
-		SELECT 
-			pBoard_no, title, content,
-			pboard_date, status,
-			menu_no, member_no
-		FROM page_board
+	<select id="selectPageBoardListAdmin" parameterType="int" resultMap="pageBoardMap">
+		<include refid="selectDefault2" />
 		WHERE menu_no = #{menuNo} AND status = '5'
 	</select>
 	
-	<select id="selectPageBoardByBoardNo"
-		parameterType="PageBoard"
-		resultMap="pageBoardMap">
-		SELECT 
-			pBoard_no, title, content,
-			pboard_date, status,
-			menu_no, member_no
-		FROM page_board
+	<select id="selectPageBoardByBoardNo" parameterType="PageBoard" resultMap="pageBoardMap">
+		<include refid="selectDefault2" />
 		WHERE pBoard_no = #{boardNo} AND status = '1'
 	</select>
 	
-	<insert id="insertPageBoard" parameterType="PageBoard"
-		useGeneratedKeys="true" 
-		keyProperty="PBoardNo" keyColumn="pBoard_no">
-		INSERT INTO page_board
-		(
-			pboard_no
-			, title
-			, content
-			, menu_no
-			, member_no
-		)
+	<insert id="insertPageBoard" parameterType="PageBoard" useGeneratedKeys="true"
+			keyProperty="PBoardNo" keyColumn="pBoard_no">
+		INSERT INTO page_board (pboard_no, title, content, menu_no, member_no)
 		VALUES (page_board_sequence.nextval, #{title}, #{content}, #{menuNo}, #{memberNo})
 	</insert>
 	
-	<select id="selectPageBoardListBySearch"
-		parameterType="String"
-		resultMap="pageBoardMap">
-		SELECT 
-			pBoard_no, title, content,
-			pboard_date, status,
-			menu_no, member_no
-		FROM page_board
-		WHERE title like '%' || #{search} || '%' 
-		AND status = '1'
+	<select id="selectPageBoardListBySearch" parameterType="String" resultMap="pageBoardMap">
+		<include refid="selectDefault2" />
+		WHERE title like '%' || #{search} || '%' AND status = '1'
 	</select>
 	
-	<select id="selectBoardList"
-		parameterType="hashMap"
-		resultMap="pageBoardMap">
+	<select id="selectBoardList" parameterType="hashMap" resultMap="pageBoardMap">
 		SELECT *
-		FROM
-		(
-			SELECT 
-				rownum idx, s.* 
-			FROM
-			(
-			SELECT 
-				pBoard_no, title, content,
-				pboard_date, status,
-				menu_no, member_no
-			FROM page_board
-			WHERE menu_no = #{menuno} AND status = '1'
-			) s			
-		)
+		FROM (
+			  SELECT rownum idx, s.*
+			  FROM (
+			 	    SELECT pBoard_no, title, content, pboard_date, status,
+						 menu_no, member_no
+ 	  			    FROM page_board
+			        WHERE menu_no = #{menuno} AND status = '1' ) s
+		      )
 		WHERE idx >= #{start} AND idx <![CDATA[<]]> #{last}
 	</select>
 	
-	<select id="selectBoardListAdmin"
-		parameterType="hashMap"
-		resultMap="pageBoardMap">
+	<select id="selectBoardListAdmin" parameterType="hashMap" resultMap="pageBoardMap">
 		SELECT *
-		FROM
-		(
-			SELECT 
-				rownum idx, s.* 
-			FROM
-			(
-			SELECT 
-				pBoard_no, title, content,
-				pboard_date, status,
-				menu_no, member_no
-			FROM page_board
-			WHERE menu_no = #{menuno} AND status = '5'
-			) s			
-		)
+		FROM (
+				SELECT rownum idx, s.*
+				FROM (
+						SELECT pBoard_no, title, content, pboard_date, status,
+							   menu_no, member_no
+						FROM page_board
+						WHERE menu_no = #{menuno} AND status = '5') s
+			 )
 		WHERE idx >= #{start} AND idx <![CDATA[<]]> #{last}
 	</select>
 	
-	<select id="selectBoardList2"
-		parameterType="hashMap"
-		resultMap="pageBoardMap">
+	<select id="selectBoardList2" parameterType="hashMap" resultMap="pageBoardMap">
 		SELECT *
-		FROM
-		(
-			SELECT 
-				rownum idx, s.* 
-			FROM
-			(
-			SELECT 
-				pBoard_no, title, content,
-				pboard_date, status,
-				menu_no, member_no
-			FROM page_board
-			WHERE menu_no = #{menuno}
-			) s			
-		)
+		FROM(
+				SELECT rownum idx, s.*
+				FROM (
+						SELECT pBoard_no, title, content, pboard_date, status,
+							   menu_no, member_no
+						FROM page_board
+						WHERE menu_no = #{menuno} ) s
+			)
 		WHERE idx >= #{start} AND idx <![CDATA[<]]> #{last} AND title like '%' || #{search} || '%' AND status = '1'
 		
 	</select>
 	
 	<select id="selectBoardCount" resultType="int" parameterType="int">
-		SELECT COUNT(*) FROM page_board
+		SELECT COUNT(*)
+		FROM page_board
 		WHERE menu_no = #{menuno}
 	</select>
 	
 	<update id="deleteBoard" parameterType="int">
-		UPDATE page_board SET status = '0' WHERE pboard_no = #{boardNo}
+		UPDATE page_board
+		SET status = '0'
+		WHERE pboard_no = #{boardNo}
 	</update>
 	
 </mapper>

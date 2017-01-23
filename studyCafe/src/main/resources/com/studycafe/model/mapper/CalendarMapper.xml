@@ -24,23 +24,23 @@
 
    <insert id="insertCalendar" parameterType="Calendar">
       <selectKey keyProperty="calendarNo" order="AFTER" resultType="int">
-         SELECT page_calendar_sequence.currval FROM DUAL
+        SELECT page_calendar_sequence.currval FROM DUAL
       </selectKey>           
-      INSERT INTO page_calendar (calendar_no, title, content,
+    INSERT INTO page_calendar (calendar_no, title, content,
                   start_date, due_date, member_no, page_no)
-      VALUES (page_calendar_sequence.nextVal, #{title}, #{content},
+    VALUES (page_calendar_sequence.nextVal, #{title}, #{content},
               #{startDate}, #{dueDate}, #{memberNo}, #{pageNo})
    </insert> 
 
   <select id="selectCalendarList" parameterType="int" resultMap="calendarMap">
-    select *
-    from page_calendar
+    SELECT *
+    FROM page_calendar
     WHERE page_no = #{memberpageno}
   </select>
   
   <select id="selectCalendarByCalendarNo" resultMap="calendarMap">
-    select *
-    from page_calendar
+    SELECT *
+    FROM page_calendar
     where calendar_no = #{calendarNo}
   </select>
      

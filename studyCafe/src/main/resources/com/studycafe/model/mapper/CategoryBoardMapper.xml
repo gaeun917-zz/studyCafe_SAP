@@ -6,10 +6,10 @@
 
 <mapper namespace="com.studycafe.model.mapper.CategoryBoardMapper">
 
-	<resultMap type="CategoryBoard" id="categoryBoardMap">
-		<id property="categoryBoardNo" column="category_board_no" />
-		<result property="smallCategoryNo" column="small_category_no" />
-		<result property="smallCategoryName" column="small_category_name" />
-	</resultMap>
+	<!--<resultMap type="CategoryBoard" id="categoryBoardMap">-->
+		<!--<id property="categoryBoardNo" column="category_board_no" />-->
+		<!--<result property="smallCategoryNo" column="small_category_no" />-->
+		<!--<result property="smallCategoryName" column="small_category_name" />-->
+	<!--</resultMap>-->
 
 </mapper>	
