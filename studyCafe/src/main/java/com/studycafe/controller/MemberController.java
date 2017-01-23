@@ -19,6 +19,9 @@ import java.util.List;
 @RequestMapping(value = "/member/") //(value= url)로 접속해서 들어오는 client 요청을 받는 주소. 즉, 내 주소
 public class MemberController {
 
+
+	//java @bean이란?
+	// serializable: 인자없는 생성자를 가지며, getter ,setter 메소드를 통하여 프로퍼티에 접근 가능한 Java Object
 	@Autowired
 	@Qualifier("memberService")
 	private MemberService memberService;
@@ -29,23 +32,24 @@ public class MemberController {
 	@RequestMapping(value = "list.action", method = RequestMethod.GET) // method = default:POST
 	public String list(Model model) {
 
-		// 1. Model이는 우체부 request씨한테서 From (list.action) <form> 이 보낸 데이터를 GET
-		// 2.  memerService(dao)로 데이터 처리
-		// 3. .addAttribute(id, value)함: nametag(id)에 데이터 처리된 애를 담아서,
+		// 1. Model이는 우체부 request씨한테서 From (list.action) <form> 이 보낸 데이터를 받음
+		// 2. memerService(dao와 같은 method list)로 데이터 처리
+		// 	  memberServiceimpl는 Mapper와 연결해줌
+		// 3. .addAttribute(id, value)함
 		// 4. return(To) jsp 주소로 내용을 보내달라고 함
-		// * jsp는 이 소포를 받음: Model이가 정한 id로 .addAttribute한 내용 꺼내씀: ${ members }
+
+		// * jsp는 이 소포를 받음: Model이가 정한 id로 .addAttribute()한 내용 꺼내씀: ${ members }
 		// * model을 쓰면 return 값이 jsp 주소 이므로, return datatype은 String이 어야함.
 		
-		//1. 데이터 조회 (memberServiceZ(interface)에는 dao와 같은 method list
-		// -> implement한 애들은 Mapper와 연결해줌)
+		//1. 데이터 조회
 		List<Member> members = memberService.getList(); //dao는 mapper 연결해줌
 		
-		// 데이터 처리가 잘되었는지, memebrs list의 (indxe:0)를 열어보자
-		//Member member = members.get(0);
-		//System.out.println(member.getMemberId());
+		// 데이터 처리가 잘되었는지 확인: 리스트의 첫번째 Member Object받기
+		// Member member = members.get(0);
+		// System.out.println(member.getMemberId());
 
 		//2. 데이터 저장 (jsp에서 사용할 수 있도록)
-		model.addAttribute("members", members);// id:"members" value: members
+		model.addAttribute("members", members);// (id, value)
 
 		//3. 뷰 반환
 		return "member/list"; // View 보내줄 곳 주소: list.jsp 
@@ -75,11 +79,11 @@ public class MemberController {
 					// @requestParam은 mapping에서 들어오는 value를
 					// httpRequest 대신해서 파라미터에(String memberId) 바로 전달해준다.
 					// 즉, String memberid = request.getParameter("memberId") 안해도됨  			// boardNo
-
-		if (memberId == null || memberId.length() == 0) {
+		// 1. 들어온 데이터(memberId) 확인
+		if (memberId == null || memberId.length() == 0) { //1.0 data 실패
 			return "redirect:/member/list.action";
 		}
-		
+														  //1.1 성공
 		Member member = memberService.searchMemberByMemberId(memberId);
 		model.addAttribute("member", member);
 		
@@ -88,7 +92,7 @@ public class MemberController {
 
 	
 	
-// ---------- 회원 가입-> term.jsp 약관 동의 -> 회원 등록페이지 --------------
+// ---------- 회원 가입 -> term.jsp 약관 동의 -> 회원 등록페이지 --------------
 	@RequestMapping(value = "term.action", method = RequestMethod.GET)
 	public String term(@ModelAttribute("member")Member member) {
 		// check 했는지는 js로 확인함
@@ -99,8 +103,8 @@ public class MemberController {
 	@RequestMapping(value = "register.action", method = RequestMethod.GET)
 	public String registerForm(@ModelAttribute("member")Member member) {
 		// 중요! @ModelAttribute: 스프링 taglib를 <form:form> 사용하기 위해 전달인자
-		// ModelAttribute는 addAttribute 대신 (nametag를 파라미터에서 설정)-> 보내주는 컨텐츠는 member
-		// @ModelA가 젤 첫번째 파라미터로 와야된다고 들었음..
+		// ModelAttribute는 .addAttribute() 대신 (nametag를 파라미터에서 설정)-> 보내주는 컨텐츠는 member
+		// @ModelAttribute가 젤 첫번째 파라미터로 와야된다고 들었음..
 		member.setRegDate(new Timestamp(System.currentTimeMillis()));
 		//timestamp parameter는 Long type이어야함
 		return "member/registerform2";
@@ -124,18 +128,17 @@ public class MemberController {
 	public String changePassword(String currentPasswd, String newPasswd, HttpSession session) {
 
 		//1. 세션의 사용자 정보 읽기
-		Member member  = (Member) session.getAttribute("loginuser");		
+		Member member  = (Member) session.getAttribute("loginuser");// (member)로 casting 해야됨.
 		currentPasswd = Util.getHashedString(currentPasswd, "SHA-256");
-		// member.getPasswd()로 구해도 되지만, 이미 파라미터로 password받음
-		// > 보안을 위해 hashcode로 변경
-
+		newPasswd = Util.getHashedString(newPasswd, "SHA-256");
+		// member.getPasswd()로 구해도 되고, 파라미터로 password받지만 보안을 위해 hashcode로 변경
 
 		//2. member 아이디와 currentPasswd로 db에서 selectMember
 		Member member2 =  memberService.login(member.getMemberId(), currentPasswd);
-		if (member2 != null) {	//2.1 조회 성공
+		if (member2 != null) {	//2.1 db에서 멤버 정보 조회 성공
 
 		//3. 새 패스워드 설정
-			member2.setPasswd(Util.getHashedString(newPasswd, "SHA-256"));
+			member2.setPasswd(newPasswd);
 			memberService.changePassword(member2); // parameter가 Member여야함
 			return "success";
 		} else {				//2.0 조회 실패
@@ -151,27 +154,28 @@ public class MemberController {
 	public String myPage(Model model, HttpSession session) {
 
 		Member member  = (Member) session.getAttribute("loginuser");
-		memberService.getMemberByMemberNo(member.getMemberNo());// 접속자#로 멤버 data GET
+		memberService.getMemberByMemberNo(member.getMemberNo());
 
 		model.addAttribute("member", member);
 		return "member/mypage";
 	}
 	
-//	register -> Mypage -> choose interest Category
-	// BindingResult? register form에 적어 넣은 내용?
+	//	register -> Mypage -> choose interest Category
+	//  BindingResult: @valid을 체크 하여,오류가 있는지를 확인
 	@RequestMapping(value = "register.action", method = RequestMethod.POST)
 	public String register(@Valid @ModelAttribute("member")Member member, BindingResult bindingResult) {
-		// register.jsp에서 form에 입력한 데이터 member에 저장되어 있음
-		// 파라미터로 들어오는 Member에 데이터 다 들어 있음-> sql update만 하면됨
+		// register.jsp에서 form에 입력한 데이터 member에 저장되어 있고, model이 보내는 소포의 nametag도 member임
 		// 패스워드는 hash로 넣으려고 일부러 setPassword로 함!
+		String pw = member.getPasswd();
+		String hashedPw = Util.getHashedString(pw, "SHA-256");
 
-		//  BindingResult: @valid을 체크 하여,오류가 있는지를 확인
 		if(bindingResult.hasErrors()){
 			return "member/registerform2";
 		}
-		member.setPasswd(Util.getHashedString(member.getPasswd(), "SHA-256"));		
+		member.setPasswd(hashedPw);
 		memberService.insertMember(member);
-		return "redirect:/member/registerSuccess.action?memberId="+member.getMemberId();
+		return "redirect:/member/registerSuccess.action?" +
+				"memberId="+member.getMemberId();
 	}
 
 

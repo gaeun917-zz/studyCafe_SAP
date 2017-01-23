@@ -33,7 +33,6 @@ public class CalendarController{
 	}
 
 
-
 	@Autowired
 	@Qualifier("pageService")
 	private PageService pageService;
@@ -68,8 +67,8 @@ public class CalendarController{
 							"&noticemenu=" + noticeMenu.getMenuNo() +"',";
 					json += "start : '" + format.format(c.getStartDate()) + "'"; // 시작일
 
-					if(c.getDueDate()!=null){
-					json += ", end : '" + format.format(c.getDueDate()) + "'"; // 마감일(마감일 없으면 정보 보내지 않음)
+					if(c.getDueDate()!=null){ // end date가 있으면 url에 추가없으면 정보 보내지 않음
+					    json += ", end : '" + format.format(c.getDueDate()) + "'";
 					}
 				json += "}";
 			}
@@ -148,7 +147,6 @@ public class CalendarController{
 
 		//3.mav add & set
 		ModelAndView mav = new ModelAndView("calendar/view");
-
 		mav.addObject("pagemenus", pageMenu);
 		mav.addObject("noticemenu", noticeMenu);
 		mav.addObject("calendar", calendar);
@@ -164,11 +162,11 @@ public class CalendarController{
 	@RequestMapping(value = "delete.action", method = RequestMethod.GET)
 	public String delete(@RequestParam("calendarno") int calendarNo, int memberpageno) {
 
-		//2. 데이터 처리 (db에서 데이터 변경)
+		//1. 데이터 처리 (db에서 데이터 변경)
 		calendarService.deleteCalendar(calendarNo);
 
-		//3. 목록으로 이동
-		return "redirect:/calendar/list.action?memberpageno=" + memberpageno;
+		//2. 목록으로 이동
+		return "redirect:/calendar/list.action?" +
+                "memberpageno=" + memberpageno;
 	}
-	
 }

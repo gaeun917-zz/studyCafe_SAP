@@ -170,7 +170,7 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 			return mav;
 		}
 
-	
+
 	@RequestMapping(value = "list.action", method = RequestMethod.GET)
 	public String list(Model model) {
 
@@ -237,8 +237,8 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		model.addAttribute("smallCategory", smallCategory);
 		return "board/listbycategory";
 	}
-	
-	
+
+
 
 	@RequestMapping(value = "detail.action", method = RequestMethod.GET)
 	public ModelAndView showBoardByBoardNo(HttpServletRequest request, HttpSession session) {
@@ -319,6 +319,11 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 		// 1. 데이터 처리 (db에서 데이터)
 		Board board = boardService.selectBoardByBoardNo(boardNo);
 		Date dDate = java.sql.Date.valueOf("2016-05-22"); 			// java.util이 아닌 sql
+		//.parse()와 date.valueOf()의 차이점
+		// value: wrapper를 씀. 근데,autoboxing이 지원되면서 wrapper 별로 신경 안써도됨
+		// String, Integer 이 reference type이고, string, int은 primitive라는 것 정도 만 알면됨
+
+
 		board.setCloseDate(dDate);
 
 		// 3. 목록으로 이동

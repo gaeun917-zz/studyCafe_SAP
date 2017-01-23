@@ -32,27 +32,28 @@ public class AccountController {
 	@Autowired
 	@Qualifier("pageMenuService")
 
+
 	@RequestMapping(value = "/login.action", method = RequestMethod.GET)
 	public String loginForm() {
 		return "account/loginform";
 	}
 
 	@RequestMapping(value = "/login.action", method = RequestMethod.POST)
-	@ResponseBody   // 데이터 보내는거 model 필요없음, 데이터 그 자체임! db에 post만 하고 끝나기 때문에
+	@ResponseBody   // 데이터 보내는거 model 필요없음, 데이터 그 자체임! db에 post, update만 하고 끝
 	public String login(String memberId, String passwd, HttpSession session) {
 
 		//1. 로그인: getMemberByIdAndPasswd(id, passwd)
 		passwd = Util.getHashedString(passwd, "SHA-256");
 		Member member = memberService.login(memberId, passwd);
 
-		if (member != null) {                //1.1 로그인 성공
+		if (member != null) {                //1.1 selectMember 성공
 			//2. 세션에 로그인 정보 저장
 			session.setAttribute("loginuser", member);
 
 			//3. 페이지 넘버 구하기
 			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
-			if (pages != null) {            //3.1 페이지 넘버 성공
-				//4. 세션에 페이지 넘버 저장
+			if (pages != null) {            //3.1 페이지No 있으면
+				//4. 페이지No 세션에 저장
 				session.setAttribute("userpages", pages);
 			}
 			return "success";
@@ -65,9 +66,9 @@ public class AccountController {
 	@RequestMapping(value = "/check-duplicate.action", method = RequestMethod.POST)
 	@ResponseBody
 	public String checkDuplicate(String memberId) {        // 같은 아이디 존재여부확인
-		// 1. 해당 id가 db에 존재하는지 확인
+		// 1. db에서 해당 id로 Member 찾기
 		Member member = memberService.searchMemberByMemberId(memberId);
-
+		// 2. 해당 id가 db에 이미 존재하는지 확인
 		if (member != null) {   //1.0 같은 아이디 있음
 			return "fail";
 		} else {                //1.1 같은 아이디 없음
@@ -122,11 +123,13 @@ public class AccountController {
 			return "<hr><li style='text-align: center'>Please Login...</li><hr>";
 		} else {
 
-			//2. pageNo 구하기 (세션에 저장되어 있음)
+			//2. pageNo 구하기 (세션에 저장되어 있음)session은 HttpSession을 리턴하기 때문에 (casting)을 해줘여함
+			@SuppressWarnings("unchecked")
 			List<Page> pages = (List<Page>) session.getAttribute("userpages");
+
 //			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 			if (pages == null) {
-				return "<hr><li style='text-align: center'>No Search Your Room</li><hr>";
+				return "<hr><li style='text-align: center'>No Search result </li><hr>";
 			} else {
 
 				//3. 페이지 메뉴 보여주기
