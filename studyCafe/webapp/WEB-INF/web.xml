@@ -7,7 +7,7 @@
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+		<param-value>/webapp/WEB-INF/spring/root-context.xml</param-value>
 	</context-param>
 	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
@@ -28,7 +28,7 @@
 		 
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+			<param-value>/webapp/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
 <!-- 톰캣이 app 돌릴때 Servlet도 함께 실행하도록 설정   -->
 		<load-on-startup>1</load-on-startup>

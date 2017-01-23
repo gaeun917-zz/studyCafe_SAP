@@ -20,7 +20,7 @@
 
 	<!-- handler! @requestMapping은 /hello 경로 만 처리해서 html, css, JS등을 처리하려면 handler가 필요!   -->
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
-	<resources mapping="/resources/**" location="/resources/" />
+	<resources mapping="/resources/**" location="/src/main/resources" />
 
 	<!-- Resolves views selected for rendering by @Controllers ->  .jsp resources in the /WEB-INF/views directory -->
 	<!-- Controller에서 return hello로 했으면, resolver는 hello.jsp를 views 폴더 안에서 찾게 된 -->
