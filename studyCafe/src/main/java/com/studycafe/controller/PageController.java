@@ -1,15 +1,10 @@
 package com.studycafe.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.studycafe.model.dto.*;
+import com.studycafe.model.service.MemberService;
+import com.studycafe.model.service.PageBoardService;
+import com.studycafe.model.service.PageService;
+import com.studycafe.ui.ThePager3;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +14,18 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.studycafe.model.dto.Member;
-import com.studycafe.model.dto.Page;
-import com.studycafe.model.dto.PageBoard;
-import com.studycafe.model.dto.PageImage;
-import com.studycafe.model.dto.PageMenu;
-import com.studycafe.model.service.MemberService;
-import com.studycafe.model.service.PageBoardService;
-import com.studycafe.model.service.PageService;
-import com.studycafe.ui.ThePager3;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/page")
@@ -72,14 +65,15 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 
 	@RequestMapping(value = "/board/list.action", method = RequestMethod.GET)
 	public ModelAndView pageBoardList(int memberpageno ,int menuno, HttpServletRequest request, HttpSession session) {
-		ModelAndView mav = new ModelAndView();
+		// 1. member구하기
 		Member member = (Member) session.getAttribute("loginuser");
 		String swich = member.getStatus();
+
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
 		//공지사항 board를 조회
-		//조건이 필요
 		// List<PageBoard> boards = pageBoardService.getAllPageBoards(menuno);
+
 		ArrayList<Member> members = new ArrayList<>();
 		int currentPage = 1;
 		int pageSize = 10;
@@ -87,6 +81,7 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		int pagerSize = 5;
 		String url = "list.action";
 		String page = request.getParameter("pageno");
+
 		if (page != null && page.length() > 0 && !page.equals("null")) {
 			currentPage = Integer.parseInt(page);
 		}
@@ -103,23 +98,27 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 			queryString = queryString.replace("&&", "&");
 			queryString += "&myp=test";
 		}
+
 		List<PageBoard> boards = pageBoardService.getBoardList(startRow, startRow + pageSize, menuno);
 		if (boards != null) {
 			for (PageBoard b : boards) {
-				Member m = new Member();
-				m = memberService.getMemberByMemberNo(b.getMemberNo());
+				Member m =  memberService.getMemberByMemberNo(b.getMemberNo());
 				members.add(m);
 			}
 		}
+
 		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
 		dataCount = pageBoardService.getBoardCount(menuno);
 		pagerSize = dataCount / pageSize;
+
+
+		ModelAndView mav = new ModelAndView("page/board/list");
 		if(dataCount >= 1 && pagerSize >= 1){
-		ThePager3 pager = new ThePager3(dataCount, currentPage, pageSize, pagerSize, url, queryString);
-		mav.addObject("pager", pager);
+			ThePager3 pager = new ThePager3(dataCount, currentPage, pageSize,
+											pagerSize, url, queryString);
+			mav.addObject("pager", pager);
 		}
 		
-		mav.setViewName("page/board/list");
 		mav.addObject("boards", boards);
 		mav.addObject("members", members);
 		mav.addObject("menu", menu);
@@ -129,7 +128,7 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		mav.addObject("swich", swich);
 		
 		// **수정할 부분
-		/*String pageno = (String) request.getParameter("mmpageno");
+		/* String pageno = (String) request.getParameter("mmpageno");
 		System.out.println(pageno);
 		int mmpageno = Integer.parseInt(pageno);
 		System.out.println(mmpageno);*/
@@ -138,36 +137,40 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		return mav;
 	}
 
-	@RequestMapping(value = "/board/detail.action", method = RequestMethod.GET)
-	public ModelAndView showPageBoardByBoardNo(HttpServletRequest request, int menuno, int memberpageno,HttpSession session) {
-		ModelAndView mav = new ModelAndView();
 
-		Member member = (Member) session.getAttribute("loginuser");
+	@RequestMapping(value = "/board/detail.action", method = RequestMethod.GET)
+	public ModelAndView showPageBoardByBoardNo(HttpServletRequest request, int menuno, int memberpageno, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
 
 		List<PageMenu> pageMenu = pageService.selectPageMenuByPageNo(memberpageno);
 		PageMenu noticeMenu = pageService.selectPageMenuByPageNoNotice(memberpageno);
 		PageMenu menu = pageService.selectMemberPageByMenuNo(menuno);
-		// 요청 정보에서 내용을 표시할 글번호를 읽고 변수에 저장
-		// (없으면 목록으로 이동)
+
+
+
+
+		// 1.request에서 boardNo 구하기
 		String boardNo = request.getParameter("boardno");
-		if (boardNo == null || boardNo.length() == 0) {
-			mav.setViewName("redirect:/page/board/list.action");
-			return mav;
-		}
 		int no = Integer.parseInt(boardNo);
 
-		// 데이터베이스에서 데이터 조회
-		PageBoard board = pageBoardService.getPageBoardByBoardNo(no);
-
-		// 조회 실패하면 목록으로 이동
-		if (board == null) {
-			mav.setViewName("redirect:/page/board/list.action");
+		if (boardNo == null || boardNo.length() == 0) {			//1.0 boardNo null
+			mav.setViewName("redirect:/page/board/list.action");//목록으로
 			return mav;
 		}
-		member = memberService.getMemberByMemberNo(board.getMemberNo());
+
+		// 2. db에서 pageBoard 구하기
+		PageBoard board = pageBoardService.getPageBoardByBoardNo(no);
+
+		if (board == null) {									//2.0 조회 data null
+			mav.setViewName("redirect:/page/board/list.action");//목록으로
+			return mav;
+		}
+
+		//3. board의 member#로 member 구하기
+		Member member = memberService.getMemberByMemberNo(board.getMemberNo());
 
 		String pageNo = "1";
-		if (request.getParameter("pageno") != null) {
+		if (request.getParameter("pageno") != null) {			//3.1 member
 			pageNo = request.getParameter("pageno");
 		}
 

@@ -124,9 +124,8 @@ public class AccountController {
 		} else {
 
 			//2. pageNo 구하기 (세션에 저장되어 있음)session은 HttpSession을 리턴하기 때문에 (casting)을 해줘여함
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("unchecked") // unchecked cast warning 떠서 @suppress 해줌
 			List<Page> pages = (List<Page>) session.getAttribute("userpages");
-
 //			List<Page> pages = pageService.searchPageNoByMemberNo(member.getMemberNo());
 			if (pages == null) {
 				return "<hr><li style='text-align: center'>No Search result </li><hr>";
