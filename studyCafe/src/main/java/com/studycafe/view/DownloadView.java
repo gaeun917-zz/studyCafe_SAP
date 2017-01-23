@@ -18,11 +18,11 @@ public class DownloadView extends AbstractView {
 	protected void renderMergedOutputModel(Map<String, Object> model,
 										   HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		//1. Controller에서 저장한 데이터 읽기
+		// 1. Controller에서 저장한 데이터 읽기
 		UploadFile file = (UploadFile)model.get("uploadfile");
 		
 		//다운로드 처리
-		//2. 다운로드 처리할 때 필요한 정보 제공 (브라우저의 다운로드 창에 표시될 파일이름)
+		// 2. 다운로드 처리할 때 필요한 정보 제공 (브라우저의 다운로드 창에 표시될 파일이름)
 		String encodedFileName = new String(file.getUserFileName().getBytes("euc-kr"),
 				"iso-8859-1");
 

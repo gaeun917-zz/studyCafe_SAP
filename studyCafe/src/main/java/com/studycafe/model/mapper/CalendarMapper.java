@@ -1,8 +1,8 @@
 package com.studycafe.model.mapper;
 
-import java.util.List;
-
 import com.studycafe.model.dto.Calendar;
+
+import java.util.List;
 
 public interface CalendarMapper {
 
@@ -13,9 +13,6 @@ public interface CalendarMapper {
 	Calendar selectCalendarByCalendarNo(int calendarNo);
 
 	void deleteCalendar(int calendarNo);
-	
-	/*Calendar selectCalendarByUploadNo2(int calendar);
-	Calendar selectCalendarByUploadNo3(int calendar);*/
-	
+
 	
 }

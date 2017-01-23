@@ -19,11 +19,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 //		String url = req.getRequestURI();
 //		boolean redirect = false;
 //		if (url.contains("/member/")) {
-//			if (member != null && 
+//			if (member != null &&
 //				member.getUserType().toLowerCase().equals("admin")) {
-//			} else {
+//
+// 			} else {
 //				redirect = true;
 //			}
+
 //		} else if (url.contains("/board/") ||
 //				   url.contains("/upload/")) {
 //			if (member != null) {				
@@ -31,9 +33,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 //				redirect = true;
 //			}
 //		}
+
 //		if (redirect) {
-//			resp.sendRedirect(
-//				"/demoweb-spring-compact6/account/login.action");
+//			resp.sendRedirect("/demoweb-spring-compact6/account/login.action");
 //			return false;
 //		} else {
 //			return true;//정상 진행 (Controller로 이동)

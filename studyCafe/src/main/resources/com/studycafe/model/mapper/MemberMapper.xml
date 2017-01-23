@@ -42,18 +42,14 @@
 		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name} #{passwd}, #{confirmPasswd}, #{email}, sysdate, #{gender});
 	</insert>  -->
 
-<insert id="insertMember" parameterType="Member" >
-		INSERT INTO member 
-		(member_No, Id, name, password, email, gender, introduction )
-		VALUES
-		(MEMBER_SEQUENCE.nextval, #{memberId}, #{name}, #{passwd},  #{email}, #{gender}, #{introduction})
+	<insert id="insertMember" parameterType="Member" >
+		INSERT INTO member (member_No, Id, name, password, email, gender, introduction )
+		VALUES (MEMBER_SEQUENCE.nextval, #{memberId}, #{name}, #{passwd},  #{email}, #{gender}, #{introduction})
 	</insert> 
 
 	<!-- 논리적 메서드 만들기 -->
-	<select id="selectMembers" resultType="Member" parameterType="hashMap"
-		resultMap="memberMap">
+	<select id="selectMembers" resultType="Member" parameterType="hashMap" resultMap="memberMap">
 		<include refid="selectDefault" />
-		<!-- SELECT memberId, email, userType, active, regDate FROM member -->
 	</select>
 	
 	<select id="selectMemberById" parameterType="string" resultMap="memberMap">
@@ -66,9 +62,8 @@
 		WHERE email = #{email}
 	</select>
 	
-	
-	
-	<select id="selectMemberByIdAndPasswd" parameterType="hashMap" resultMap="memberMap">
+
+	<select id="selectMemberByIdAndPasswd" parameterType="HashMap" resultMap="memberMap">
 		<include refid="selectDefault" />
 		WHERE Id = #{memberId} AND password = #{passwd}
 	</select>
@@ -79,19 +74,20 @@
 		WHERE member_no = #{memberno}
 	</select>
 	
-	<!-- parameterType = 시퀀스로 멤버 서치 하기때문에 int으로   -->
 	<update id="changePassword" parameterType="Member">
 		UPDATE Member 
 		SET password= #{passwd}  
 		WHERE member_no =#{memberNo}
 	</update>
-	
+
+	<!-- parameterType = 시퀀스로 멤버 서치 하기때문에 int으로, return 없음   -->
 	<update id="deleteByMemberNo" parameterType="int" >
 		UPDATE Member 
 		SET status= 'deactive'  
 		WHERE member_no =#{memberNo}
 	</update>
-	
+
+	<!--board 관련 -->
 	<insert id="insertBoardMemberByBoardNoMemberNo" parameterType="BoardMember">
 		INSERT INTO board_member(board_no, member_no, status)
 		VALUES (#{boardNo}, #{memberNo}, '1')

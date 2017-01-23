@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MemberMapper {
 
-// MemberMapper.xml(sql)
+	// MemberMapper.xml(sql)
 
 	void insertMember(Member member);
 	List<Member> selectMembers();
