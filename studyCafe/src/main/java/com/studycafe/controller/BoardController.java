@@ -48,8 +48,7 @@ public class BoardController implements ApplicationContextAware, BeanNameAware {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-		SimpleDateFormat dateFormat =
-				new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		binder.registerCustomEditor(
 				Date.class, new CustomDateEditor(dateFormat, false));
 	}
