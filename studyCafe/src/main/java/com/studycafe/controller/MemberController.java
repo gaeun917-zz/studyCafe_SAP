@@ -182,9 +182,9 @@ public class MemberController {
 	@RequestMapping(value = "delete.action", method = RequestMethod.GET)
 	public String delete(HttpSession session) {
 		Member member  = (Member) session.getAttribute("loginuser");
-		memberService.deleteByMemberNo(member.getMemberNo());
+		memberService.deleteByMemberNo(member.getMemberNo()); // member.status will be marked as deactive
 
-		session.removeAttribute("loginuser");
+        session.removeAttribute("loginuser");
 		return "redirect:/";
 	}
 }

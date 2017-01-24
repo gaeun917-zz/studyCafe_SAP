@@ -1,13 +1,11 @@
 package com.studycafe.model.dto;
 
-import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import javax.validation.constraints.Pattern;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Pattern;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 public class Member implements Serializable {
 	
@@ -115,7 +113,7 @@ public class Member implements Serializable {
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
 	}
-	public Member(){}
+
 	public Member(String email, String passwd, String name, Timestamp regDate) {
 		this.email = email;
 		this.passwd = passwd;
