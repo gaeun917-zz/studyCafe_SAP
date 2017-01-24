@@ -16,6 +16,30 @@
 <%-- ------------------------------------------------------------------------------ --%>
 
 <body data-spy="scroll">
+<script type="text/javascript">
+    $('#pettype').css('display', "${ empty loginuser ? 'none' : 'block' }");
+    $('#btnLogin1').css('display', "${ not empty loginuser ? 'none' : 'block' }");
+    $(function () {
+        $('#mystudyroom').on('click', function (event) {
+            $.ajax({
+                url: '/studyCafe/account/pageList.action',
+                type: 'get',
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                data: {},
+                success: function (data, status, xhr) {
+                    showResult(data);
+                }
+            })
+        });
+
+        function showResult(data) {
+            if (data.length == 0)
+                return;
+            $('#dspan').html(data);
+        }
+    });
+</script>
+
 <header id="header">
     <nav class="navbar navbar-default" role="navigation">
         <div class="a">
@@ -23,28 +47,6 @@
                 <a class="navbar-brand" href="/studyCafe/home.action"
                    style="font-weight: bolder; font-float:none; font-size: large;">스터디 카페</a>
             </div>
-
-            <script type="text/javascript">
-                $(function () {
-                    $('#mystudyroom').on('click', function (event) {
-                        $.ajax({
-                                url: '/studyCafe/account/pageList.action',
-                                type: 'get',
-                                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                data: {},
-                                success: function (data, status, xhr) {
-                                             showResult(data);
-                                        }
-                        })
-                    });
-
-                    function showResult(data) {
-                        if (data.length == 0)
-                            return;
-                        $('#dspan').html(data);
-                    }
-                });
-            </script>
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
@@ -59,9 +61,7 @@
                 </li>
                 <li class="dropdown">
                     <a id="mystudyroom" class="dropdown-toggle" data-toggle="dropdown"
-                       href="javascript:
-					   		window.open('/studyCafe/page/board/list.action?menuno=${pagemenu.menuNo}','${ userpage.getName() }',
-					   		  			'width=1000, height=1200, toolbar=no, menubar=no, scrollbars=no, resizable=yes');">
+                       href="javascript:window.open('/studyCafe/page/board/list.action?menuno=${pagemenu.menuNo}', '${ userpage.getName() }','width=1000, height=1200, toolbar=no, menubar=no, scrollbars=no, resizable=yes');">
                         <span class="glyphicon glyphicon-lamp"/>&nbsp;&nbsp;내 공부방 가기<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
@@ -73,10 +73,6 @@
                     </ul>
                 </li>
                 <!-- <li><a href="/studyCafe/calendar/list.action">캘린더</a></li> -->
-                <li>
-                    <a href="#"/>
-                </li>
-
 
                 <li>
                     <c:choose>
@@ -91,13 +87,16 @@
                         <c:otherwise>
                             <a id="btnLogin1" href="#" style="font-weight: bold;" data-toggle="modal"
                                data-target="#myModal">
-                                <span class="glyphicon glyphicon-user"/>&nbsp;&nbsp;로그인</a>
+                                <span class="glyphicon glyphicon-user"/>&nbsp;&nbsp;로그인
+                            </a>
                         </c:otherwise>
                     </c:choose>
 
                     <button style="margin-top: 10px; size: 40px" type="button" data-toggle="dropdown"
                             id="pettype" aria-haspopup="true" aria-expanded="true"
-                            class="btn btn-info dropdown-toggle">${loginuser.memberId}</button>
+                            class="btn btn-info dropdown-toggle">${loginuser.memberId}
+                    </button>
+
 
                     <ul class="dropdown-menu" aria-labelledby="pettype">
                         <li class="dropdown-header"></li>
@@ -121,17 +120,9 @@
                             </a>
                         </li>
                     </ul>
-                </li>
 
-                <li>
-                    <a href="#"></a>
                 </li>
             </ul>
-
-            <script type="text/javascript">
-                $('#pettype').css('display', "${ empty loginuser ? 'none' : 'block' }");
-                $('#btnLogin1').css('display', "${ not empty loginuser ? 'none' : 'block' }");
-            </script>
 
         </div><!-- container -->
     </nav>

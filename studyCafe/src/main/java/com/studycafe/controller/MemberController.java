@@ -72,13 +72,13 @@ public class MemberController {
 //		return mav;		
 //	}
 
-
+	//list.jsp
 	@RequestMapping(value = "view.action", method = RequestMethod.GET)
 	public String view(@RequestParam("memberid") String memberId, Model model) {
-
 					// @requestParam은 mapping에서 들어오는 value를
 					// httpRequest 대신해서 파라미터에(String memberId) 바로 전달해준다.
 					// 즉, String memberid = request.getParameter("memberId") 안해도됨  			// boardNo
+
 		// 1. 들어온 데이터(memberId) 확인
 		if (memberId == null || memberId.length() == 0) { //1.0 data 실패
 			return "redirect:/member/list.action";
