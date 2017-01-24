@@ -1,212 +1,205 @@
-﻿body, h3, textarea, input, select
-{
-	font-family: Tahoma,Arial,Helvetica;
-	font-size:12px;
+﻿body, h3, textarea, input, select {
+    font-family: Tahoma, Arial, Helvetica;
+    font-size: 12px;
 }
 
-body
-{
-	background:#ffffff none repeat scroll 0%;
-	color:#333333;
-	margin:0pt;
-	padding:0pt;
+body {
+    background: #ffffff none repeat scroll 0%;
+    color: #333333;
+    margin: 0pt;
+    padding: 0pt;
 }
 
-#pageContainer
-{
-	background:#ffffff none repeat scroll 0%;
-	margin:0pt auto;
-	max-width:100%;
-	min-width:600px;
-	padding:0pt 0px;
-	position:relative;
-	text-align:left;
+#pageContainer {
+    background: #ffffff none repeat scroll 0%;
+    margin: 0pt auto;
+    max-width: 100%;
+    min-width: 600px;
+    padding: 0pt 0px;
+    position: relative;
+    text-align: left;
 }
 
-#header
-{
-	background-color:#eb4c07;
-	color:#ffffff;
-	width:100%;
-	padding-bottom:4px;
-	height:60px;
+.page_board_list_table th, .page_board_detail th,
+.page_board_writeform th, .page_board_writeform h4,
+.uploadlist th, .uploadview_table th,
+.uploadwriteform_thead th {
+    text-align: center;
+    width: 20%;
+}
+.uploadview_table td{
+    text-align: left;
+}
+.
+.page_board_writeform textarea {
+    width: 100%;
+    height: 412px;
+    display: none;
 }
 
-#header a
-{
-	color:#ffffff;
-	font-weight:bold;
-	text-decoration:none;
+.page_board_detail td {
+    text-align: left;
 }
 
-#header .title
-{
-	font-family:"Trebuchet MS",Sans-Serif,Verdana;
-	font-size:36px;
-	font-weight:bolder;
-	padding-left:15px;
-	padding-top:5px;
-	float:left;
+#header {
+    background-color: #eb4c07;
+    color: #ffffff;
+    width: 100%;
+    padding-bottom: 4px;
+    height: 60px;
 }
 
-#header .links
-{
-	padding-top:45px;
-	float:right;
+#header a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
 }
 
-#header .links a
-{
-	padding: 8px 8px 8px 8px;
+#header .title {
+    font-family: "Trebuchet MS", Sans-Serif, Verdana;
+    font-size: 36px;
+    font-weight: bolder;
+    padding-left: 15px;
+    padding-top: 5px;
+    float: left;
 }
 
-#menu
-{
-	background-color:#404040;
-	color:#000000;
-	padding:5px 15px 5px;
+#header .links {
+    padding-top: 45px;
+    float: right;
 }
 
-#menu ul
-{
-	display:inline;
-	margin-left:0pt;
-	padding-left:0pt;
+#header .links a {
+    padding: 8px 8px 8px 8px;
 }
 
-#menu ul li
-{
-	border:medium none;
-	display:inline;
-	list-style-image:none;
-	list-style-position:outside;
-	list-style-type:none;
-	margin-left:0pt;
+#menu {
+    background-color: #404040;
+    color: #000000;
+    padding: 5px 15px 5px;
 }
 
-#menu ul li a
-{
-	padding: 8px 8px 8px 8px;
-	color:#ffffff;
-	font-weight:bold;
-	text-decoration : none;
+#menu ul {
+    display: inline;
+    margin-left: 0pt;
+    padding-left: 0pt;
 }
 
-#menu ul li a:focus, #menu ul li a:hover
-{
-	background-color:#5a5a5a;
-	outline-color:invert;
-	outline-style:none;
-	outline-width:medium;
+#menu ul li {
+    border: medium none;
+    display: inline;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin-left: 0pt;
 }
 
-#content
-{
-	margin-left:10px;
-	margin-right:10px;
-	padding-top: 0px;
-	text-align:center;
+#menu ul li a {
+    padding: 8px 8px 8px 8px;
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
 }
 
-#sidebar
-{
-	float:left;
-	width:280px;
-	padding-top: 10px;
-	margin-right:10px;
+#menu ul li a:focus, #menu ul li a:hover {
+    background-color: #5a5a5a;
+    outline-color: invert;
+    outline-style: none;
+    outline-width: medium;
 }
 
-.divider
-{
-	height:10px;
+#content {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 0px;
+    text-align: center;
 }
 
-.form
-{
-	background: #fff9d7 none no-repeat scroll 0%;
-	border: 1px solid #e2c822;
-	padding: 0 8px 8px 8px;
+#sidebar {
+    float: left;
+    width: 280px;
+    padding-top: 10px;
+    margin-right: 10px;
 }
 
-.form h2
-{
-	border-bottom:1px solid #e2c822;
-	font-size:12px;
-	font-weight:bold;
-	padding-bottom:5px;
+.divider {
+    height: 10px;
 }
 
-.form p
-{
-	margin-top:5px;
-	margin-bottom:5px;
+.form {
+    background: #fff9d7 none no-repeat scroll 0%;
+    border: 1px solid #e2c822;
+    padding: 0 8px 8px 8px;
 }
 
-.form .label
-{
-	width: 70px;
-	padding-right:2px;
-	padding-top:2px;
-	float: left;
-	clear:left;
+.form h2 {
+    border-bottom: 1px solid #e2c822;
+    font-size: 12px;
+    font-weight: bold;
+    padding-bottom: 5px;
 }
 
-.form .textbox
-{
-	width: 280px;
-	border:1px solid #e2c822;
-	font-size:11px;
-	padding:3px;
+.form p {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
-.form .textarea
-{
-	width: 280px;
-	height:128px;
-	border:1px solid #e2c822;
-	font-size:11px;
-	padding:3px;
+.form .label {
+    width: 70px;
+    padding-right: 2px;
+    padding-top: 2px;
+    float: left;
+    clear: left;
 }
 
-.form .largeTextbox
-{
-	width: 480px;
-	border:1px solid #e2c822;
-	font-size:11px;
-	padding:3px;
+.form .textbox {
+    width: 280px;
+    border: 1px solid #e2c822;
+    font-size: 11px;
+    padding: 3px;
 }
 
-.form .largeTextarea
-{
-	width: 480px;
-	height:192px;
-	border:1px solid #e2c822;
-	font-size:11px;
-	padding:3px;
+.form .textarea {
+    width: 280px;
+    height: 128px;
+    border: 1px solid #e2c822;
+    font-size: 11px;
+    padding: 3px;
 }
 
-.form .button
-{
-	background:#f2f2f2 url(../Images/buttonBG.gif) repeat-x scroll 0%;
-	border:1px solid #999999;
-	padding: 2px 4px 2px 4px;
+.form .largeTextbox {
+    width: 480px;
+    border: 1px solid #e2c822;
+    font-size: 11px;
+    padding: 3px;
 }
 
-.form .validator
-{
-	color:#ff0000;
-	padding-left:72px;
+.form .largeTextarea {
+    width: 480px;
+    height: 192px;
+    border: 1px solid #e2c822;
+    font-size: 11px;
+    padding: 3px;
 }
 
-.form .smallTextbox
-{
-	border:1px solid #e2c822;
-	font-size:11px;
-	padding:3px;
-	width: 200px;
+.form .button {
+    background: #f2f2f2 url(../Images/buttonBG.gif) repeat-x scroll 0%;
+    border: 1px solid #999999;
+    padding: 2px 4px 2px 4px;
 }
 
-.form .message
-{
-	padding-left:72px;
+.form .validator {
+    color: #ff0000;
+    padding-left: 72px;
+}
+
+.form .smallTextbox {
+    border: 1px solid #e2c822;
+    font-size: 11px;
+    padding: 3px;
+    width: 200px;
+}
+
+.form .message {
+    padding-left: 72px;
 }

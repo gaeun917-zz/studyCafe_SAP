@@ -36,7 +36,6 @@
             $('#btnBack').on('click', function (event) {
                 history.back();
             });
-
         });
     </script>
 </head>

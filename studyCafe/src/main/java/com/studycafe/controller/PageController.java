@@ -110,7 +110,7 @@ public class PageController implements ApplicationContextAware, BeanNameAware {
 		pagerSize = dataCount / pageSize;
 
 
-		ModelAndView mav = new ModelAndView("page/board/list");
+		ModelAndView mav = new ModelAndView("page/board/list"); // jsp로 아래 데이터 보내줌
 		if(dataCount >= 1 && pagerSize >= 1){
 			ThePager3 pager = new ThePager3(dataCount, currentPage, pageSize,
 											pagerSize, url, queryString);

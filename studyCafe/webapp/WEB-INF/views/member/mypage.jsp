@@ -49,6 +49,7 @@
                         // controller의 changePw에서 return 값이 success, false임
                         if (data == 'success') {
                             alert('비밀번호를 변경했습니다.');
+
                         } else {
                             alert('비밀번호 변경 실패')
                         }
